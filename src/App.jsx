@@ -12,6 +12,7 @@ import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
 import TarjanSSC from './algorithm/TarjanSSC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
+import Topo from './algorithm/Topo'
 
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
@@ -83,6 +84,12 @@ function App() {
       label: 'Tarjan SSC',
       callback: () => {
         setAlg(new TarjanSSC());
+      },
+    },
+    {
+      label: 'Topo',
+      callback: () => {
+        setAlg(new Topo());
       },
     },
   ];
