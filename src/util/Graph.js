@@ -291,10 +291,11 @@ class Graph {
     this.events = [];
 
     /**
-     * a list of table dimensions that are associated with the animation [rows, columns] pairs
-     * @type {Array.<[number, number]>}
+     * a list of table properties for initializing tables with [rows, columns, initialValue, cellToString] tuples
+     * @template C
+     * @type {Array.<[number, number, C, * => string]>}
      */
-    this.tableDimensions = [];
+    this.tableInitialization = [];
 
     /**
      * whether parameter initialization has finished (creating tables)
@@ -374,19 +375,20 @@ class Graph {
    * @param {number} rows
    * @param {number} columns
    * @param {T} initialValue
+   * @param {null | (T => string)} cellToString
    * @return {EventfulTable<T>}
    */
-  createTable(rows, columns, initialValue = 0) {
+  createTable(rows, columns, initialValue = 0, cellToString = null) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
     }
     /**
      * table ID (used to reference itself in the events list)
      */
-    const id = this.tableDimensions.length;
-    this.tableDimensions.push([rows, columns]);
+    const id = this.tableInitialization.length;
+    this.tableInitialization.push([rows, columns, initialValue, cellToString]);
 
-    const table = new EventfulTable(rows, columns, initialValue);
+    const table = new EventfulTable(rows, columns, initialValue, cellToString);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
