@@ -30,7 +30,7 @@ export default function Table({ table }) {
                   : '')
               }
             >
-              {table.cellToString ? table.cellToString(cell) : cell}
+              {table.cellToString ? table.cellToString(cell) : (cell === Infinity ? '∞' : cell)}
             </div>
           ))}
         </div>
