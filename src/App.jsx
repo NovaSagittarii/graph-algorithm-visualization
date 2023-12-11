@@ -14,8 +14,10 @@ import TarjanSSC from './algorithm/TarjanSSC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
 
 function App() {
+  const [vertexCount, setVertexCount] = useState(20);
+  const [tps, setTps] = useState(10);
   const [graphInput, setGraphInput] = useState(
-    Graph.generateRoughlyPlanarGraph(20),
+    Graph.generateRoughlyPlanarGraph(vertexCount),
   );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
@@ -26,7 +28,7 @@ function App() {
     {
       label: 'Randomize',
       callback: () => {
-        setGraphInput(Graph.generateRoughlyPlanarGraph(20));
+        setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
       },
     },
     {
@@ -84,6 +86,10 @@ function App() {
       },
     },
   ];
+
+  useEffect(() => {
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
+  }, [vertexCount]);
   useEffect(() => {
     if (graphInput) {
       const processedGraph = alg.run(graphInput);
@@ -91,6 +97,16 @@ function App() {
       setGraph(graph);
     }
   }, [graphInput, alg]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (graph) {
+        graph.step(Date.now());
+      }
+    }, 1000 / tps);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [tps, graph]);
 
   return (
     <div>
@@ -99,6 +115,35 @@ function App() {
           {label}
         </button>
       ))}
+      <div>
+        <div>
+          <label> vertex count: {vertexCount} </label>
+          <input
+            type='range'
+            name='vertex-n'
+            min={5}
+            max={30}
+            step={5}
+            defaultValue={vertexCount}
+            onMouseUp={({ target }) => setVertexCount(+target.value)}
+          />
+        </div>
+        <div>
+          <label> tick / second: {tps} </label>
+          {[1, 2, 5, 10, 20, 50, 100].map((x, index) => (
+            <button
+              key={index}
+              onClick={() => setTps(x)}
+              className={
+                'bg-slate-100 hover:border transition-all ' +
+                (x === tps ? 'border-red-500' : '')
+              }
+            >
+              {x}
+            </button>
+          ))}
+        </div>
+      </div>
       <RenderedGraph graph={graph} />
     </div>
   );

@@ -4,7 +4,10 @@ import Vector2 from './util/Vector2';
 import GraphPlayer from './util/GraphPlayer';
 import Table from './Table';
 
-const FADE_DURATION = 15;
+/**
+ * Fading flash duration when a node/edge is accessed (in ms)
+ */
+const FADE_DURATION = 250;
 
 /**
  *
@@ -22,14 +25,11 @@ export default function RenderedGraph({ graph }) {
     };
 
     p5.mousePressed = () => {
-      // graph.step(p5.frameCount);
+      // graph.step(Date.now());
     };
 
     p5.draw = () => {
       if (!graph) return;
-      if (p5.frameCount % 5 === 0) {
-        graph.step(p5.frameCount);
-      }
       p5.background(250);
       p5.push();
       // p5.ellipse(p5.mouseX, p5.mouseY, 10, 10);
@@ -81,10 +81,10 @@ export default function RenderedGraph({ graph }) {
           255 * (color % 2),
           255 * ((color>>1) % 2),
           255 * ((color>>2) % 2),
-          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - p5.frameCount) / FADE_DURATION),
+          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION),
         );
         // prettier-ignore
-        p5.strokeWeight(1 + 1 * Math.max(0, (FADE_DURATION + lastRead - p5.frameCount) / FADE_DURATION));
+        p5.strokeWeight(1 + 1 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION));
         p5.fill(255);
         p5.ellipse(position.x, position.y, 15, 15);
         p5.fill(0);
@@ -104,33 +104,38 @@ export default function RenderedGraph({ graph }) {
           255 * (color % 2),
           255 * ((color>>1) % 2),
           255 * ((color>>2) % 2),
-          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - p5.frameCount) / FADE_DURATION),
+          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION),
         );
         p5.push();
         p5.translate(u.x, u.y);
         const diff = u.clone().multiply(-1).add(v.clone());
         p5.rotate(diff.angle());
-        const RADIUS_OFFSET = 7;
-        p5.line(RADIUS_OFFSET, 3, diff.magnitude() - RADIUS_OFFSET, 3);
-        p5.translate(diff.magnitude() - RADIUS_OFFSET, 3);
-        p5.line(0, 0, -3, 3);
+        const RADIUS_OFFSET = 8;
+        if (graph.directed) {
+          p5.line(RADIUS_OFFSET, 3, diff.magnitude() - RADIUS_OFFSET, 3);
+          p5.translate(diff.magnitude() - RADIUS_OFFSET, 3);
+          p5.line(0, 0, -3, 3);
+        } else {
+          p5.line(RADIUS_OFFSET, 0, diff.magnitude() - RADIUS_OFFSET, 0);
+        }
         p5.pop();
       }
       p5.noStroke();
 
-      const impulse = vertices.map((u) => new Vector2(0, 0));
-      for (const edgeList of graph.edgeLists) {
-        for (const { from, to } of edgeList) {
-          if (from !== to) continue;
-          vertices[from].position.repulse(
-            vertices[to].position,
-            10,
-            5,
-            impulse[from],
-          );
+      const impulse = vertices.map(() => new Vector2(0, 0));
+      for (let u = 0; u < vertices.length; ++u) {
+        for (let v = 0; v < vertices.length; ++v) {
+          if (u === v) continue;
+          const connected = graph.edgeMatrix[u][v] !== null;
+          // prettier-ignore
+          vertices[u].position.repulse(vertices[v].position, 150, 1, impulse[u]);
+          // prettier-ignore
+          if (connected) {
+            vertices[u].position.repulse(vertices[v].position, 20, 3, impulse[u]);
+          }
         }
       }
-      vertices.forEach((v, i) => v.position.add(impulse[i]));
+      vertices.forEach((v, i) => v.position.add(impulse[i].multiply(0.5)));
 
       p5.pop();
     };
