@@ -10,7 +10,7 @@ import Dijkstra from './algorithm/Dijkstra';
 import FloydWarshall from './algorithm/FloydWarshall';
 import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
-import TarjanSSC from './algorithm/TarjanSSC';
+import TarjanSCC from './algorithm/TarjanSCC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
 
 function App() {
@@ -89,9 +89,9 @@ function App() {
       },
     },
     {
-      label: 'Tarjan SSC',
+      label: 'Tarjan SCC',
       callback: () => {
-        setAlg(new TarjanSSC());
+        setAlg(new TarjanSCC());
       },
     },
   ];

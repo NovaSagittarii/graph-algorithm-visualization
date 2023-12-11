@@ -1,7 +1,7 @@
 import Graph from '../util/Graph';
 import BaseAlgorithm from './BaseAlgorithm';
 
-class TarjanSSC extends BaseAlgorithm {
+class TarjanSCC extends BaseAlgorithm {
   /** @override */
   run(graphInput) {
     // --- set up auxiliary values then finalize
@@ -12,4 +12,4 @@ class TarjanSSC extends BaseAlgorithm {
     return graph;
   }
 }
-export default TarjanSSC;
+export default TarjanSCC;
