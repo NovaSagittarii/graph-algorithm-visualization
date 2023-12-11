@@ -4,7 +4,10 @@ import Vector2 from './util/Vector2';
 import GraphPlayer from './util/GraphPlayer';
 import Table from './Table';
 
-const FADE_DURATION = 15;
+/**
+ * Fading flash duration when a node/edge is accessed (in ms)
+ */
+const FADE_DURATION = 250;
 
 /**
  *
@@ -22,14 +25,11 @@ export default function RenderedGraph({ graph }) {
     };
 
     p5.mousePressed = () => {
-      // graph.step(p5.frameCount);
+      // graph.step(Date.now());
     };
 
     p5.draw = () => {
       if (!graph) return;
-      if (p5.frameCount % 5 === 0) {
-        graph.step(p5.frameCount);
-      }
       p5.background(250);
       p5.push();
       // p5.ellipse(p5.mouseX, p5.mouseY, 10, 10);
@@ -81,10 +81,10 @@ export default function RenderedGraph({ graph }) {
           255 * (color % 2),
           255 * ((color>>1) % 2),
           255 * ((color>>2) % 2),
-          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - p5.frameCount) / FADE_DURATION),
+          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION),
         );
         // prettier-ignore
-        p5.strokeWeight(1 + 1 * Math.max(0, (FADE_DURATION + lastRead - p5.frameCount) / FADE_DURATION));
+        p5.strokeWeight(1 + 1 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION));
         p5.fill(255);
         p5.ellipse(position.x, position.y, 15, 15);
         p5.fill(0);
@@ -104,7 +104,7 @@ export default function RenderedGraph({ graph }) {
           255 * (color % 2),
           255 * ((color>>1) % 2),
           255 * ((color>>2) % 2),
-          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - p5.frameCount) / FADE_DURATION),
+          100 + 155 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION),
         );
         p5.push();
         p5.translate(u.x, u.y);
