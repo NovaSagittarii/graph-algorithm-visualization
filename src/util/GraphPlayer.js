@@ -62,6 +62,12 @@ class GraphPlayer {
         ),
     );
 
+    // simple last read table setup
+    // TODO: setup same since last read thing for the table too?
+    this.lastReadTable = -1;
+    this.lastReadTableRow = -1;
+    this.lastReadTableColumn = -1;
+
     /** @type {Array.<Edge<E>>} */
     this.edges = [];
     this.edgeLists = graph.edges.map((edgeList) =>
@@ -133,6 +139,17 @@ class GraphPlayer {
             }
             break;
           }
+          case 'tableRead':
+          case 'tableWrite': {
+            const { id, row, column } = data;
+            this.lastReadTable = id;
+            this.lastReadTableRow = row;
+            this.lastReadTableColumn = column;
+            if (type === 'tableWrite') {
+              this.tables[id].set(row, column, data.newValue);
+            }
+            break;
+          }
           case 'subroutineStart':
             ++depth;
             break;
@@ -147,7 +164,7 @@ class GraphPlayer {
         console.error(event);
         throw error;
       }
-    } while (depth);
+    } while (depth && this.pc < this.events.length);
   }
 }
 

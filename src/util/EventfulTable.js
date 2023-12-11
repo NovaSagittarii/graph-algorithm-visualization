@@ -13,6 +13,11 @@ class EventfulTable extends EventTarget {
     this.matrix = [...new Array(rows)].map(() =>
       [...new Array(columns)].map(() => initialValue),
     );
+
+    // surely this doesn't lead to race condition?
+    this.lastRow = -1;
+    this.lastColumn = -1;
+    this.lastWrite = -1;
   }
 
   /**
@@ -22,7 +27,9 @@ class EventfulTable extends EventTarget {
    * @return {T}
    */
   get(row, column) {
-    this.dispatchEvent(new Event('read', { row, column }));
+    this.lastRow = row;
+    this.lastColumn = column;
+    this.dispatchEvent(new Event('read'));
     return this.matrix[row][column];
   }
 
@@ -34,14 +41,10 @@ class EventfulTable extends EventTarget {
    * @return {EventfulTable} itself
    */
   set(row, column, newValue) {
-    this.dispatchEvent(
-      new Event('write', {
-        row,
-        column,
-        oldValue: this.matrix[row][column],
-        newValue,
-      }),
-    );
+    this.lastRow = row;
+    this.lastColumn = column;
+    this.lastWrite = newValue;
+    this.dispatchEvent(new Event('write'));
     this.matrix[row][column] = newValue;
     return this;
   }

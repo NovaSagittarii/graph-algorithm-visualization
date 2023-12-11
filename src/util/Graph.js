@@ -384,25 +384,24 @@ class Graph {
     this.tableDimensions.push([rows, columns]);
 
     const table = new EventfulTable(rows, columns, initialValue);
-    table.addEventListener('read', ({ row, column }) => {
+    table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
         data: {
           id,
-          row,
-          column,
+          row: table.lastRow,
+          column: table.lastColumn,
         },
       });
     });
-    table.addEventListener('write', ({ row, column, oldValue, newValue }) => {
+    table.addEventListener('write', () => {
       this.events.push({
         type: 'tableWrite',
         data: {
           id,
-          row,
-          column,
-          oldValue,
-          newValue,
+          row: table.lastRow,
+          column: table.lastColumn,
+          newValue: table.lastWrite,
         },
       });
     });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ReactP5Wrapper } from '@p5-wrapper/react';
 import Vector2 from './util/Vector2';
 import GraphPlayer from './util/GraphPlayer';
@@ -12,8 +12,6 @@ const FADE_DURATION = 15;
  * @returns
  */
 export default function RenderedGraph({ graph }) {
-  const [tables, setTables] = useState([]);
-
   /**
    * @param {import("@p5-wrapper/react").P5CanvasInstance} p5
    */
@@ -31,7 +29,6 @@ export default function RenderedGraph({ graph }) {
       if (!graph) return;
       if (p5.frameCount % 5 === 0) {
         graph.step(p5.frameCount);
-        setTables(graph.tables);
       }
       p5.background(250);
       p5.push();
@@ -141,7 +138,7 @@ export default function RenderedGraph({ graph }) {
   return (
     <div>
       <ReactP5Wrapper sketch={sketch} />
-      {tables.map((table, index) => (
+      {graph?.tables.map((table, index) => (
         <div key={index}>
           <Table table={table} />
         </div>

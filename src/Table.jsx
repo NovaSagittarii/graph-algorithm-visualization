@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import EventfulTable from './util/EventfulTable';
 
 /**
@@ -5,6 +6,16 @@ import EventfulTable from './util/EventfulTable';
  * @param {{table: EventfulTable}} props
  */
 export default function Table({ table }) {
+  const [refreshTable, setRefreshTable] = useState(false);
+  useEffect(() => {
+    const int = setInterval(() => {
+      setRefreshTable((x) => !x);
+    }, 100);
+    return () => {
+      clearInterval(int);
+    };
+  }, [table]);
+
   return (
     <div className='flex flex-col p-1 bg-slate-100 rounded-md'>
       {table.matrix.map((row, i) => (
