@@ -50,8 +50,8 @@ class GraphPlayer {
     this.events = graph.events.slice(0);
     Object.freeze(this.events);
 
-    this.tables = graph.tableDimensions.map(
-      ([n, m]) => new EventfulTable(n, m),
+    this.tables = graph.tableInitialization.map(
+      ([n, m, c, mapping]) => new EventfulTable(n, m, c, mapping),
     );
     this.vertices = graph.vertices.map(
       (vertex) =>
@@ -67,7 +67,7 @@ class GraphPlayer {
     this.lastReadTable = -1;
     this.lastReadTableRow = -1;
     this.lastReadTableColumn = -1;
-    
+
     /**
      * Whether the graph is directed or not
      */

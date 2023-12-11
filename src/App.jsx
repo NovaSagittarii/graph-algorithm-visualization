@@ -16,11 +16,17 @@ import ReachabilityQuery from './algorithm/ReachabilityQuery';
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
   const [tps, setTps] = useState(10);
+  const [edgeWeightRange, setEdgeWeightRange] = useState([1, 1]);
   const [graphInput, setGraphInput] = useState(
     Graph.generateRoughlyPlanarGraph(vertexCount),
   );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
+
+  function regenerateGraph() {
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount), edgeLo, edgeHi);
+  }
+
   /**
    * @type {Array.<{label:string, callback:()=>{}}>}
    */
@@ -28,7 +34,13 @@ function App() {
     {
       label: 'Randomize',
       callback: () => {
-        setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
+        setEdgeWeightRange([1, 1]);
+      },
+    },
+    {
+      label: 'Negative Randomize',
+      callback: () => {
+        setEdgeWeightRange([-10, 100]);
       },
     },
     {
@@ -88,8 +100,8 @@ function App() {
   ];
 
   useEffect(() => {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
-  }, [vertexCount]);
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1]));
+  }, [vertexCount, edgeWeightRange]);
   useEffect(() => {
     if (graphInput) {
       const processedGraph = alg.run(graphInput);
@@ -102,7 +114,7 @@ function App() {
       if (graph) {
         graph.step(Date.now());
       }
-    }, 1000/tps);
+    }, 1000 / tps);
     return () => {
       clearInterval(interval);
     };
@@ -118,13 +130,30 @@ function App() {
       <div>
         <div>
           <label> vertex count: {vertexCount} </label>
-          <input type='range' name='vertex-n' min={5} max={30} step={5} defaultValue={vertexCount} onMouseUp={({target}) => setVertexCount(+target.value)}/>
+          <input
+            type='range'
+            name='vertex-n'
+            min={5}
+            max={30}
+            step={5}
+            defaultValue={vertexCount}
+            onMouseUp={({ target }) => setVertexCount(+target.value)}
+          />
         </div>
         <div>
           <label> tick / second: {tps} </label>
-          {[1, 2, 5, 10, 20, 50, 100].map((x,index) => (<button key={index} onClick={() => setTps(x)} className={'bg-slate-100 hover:border transition-all ' + (x===tps ? 'border-red-500' : '')}>
-            {x}
-          </button>))}
+          {[1, 2, 5, 10, 20, 50, 100].map((x, index) => (
+            <button
+              key={index}
+              onClick={() => setTps(x)}
+              className={
+                'bg-slate-100 hover:border transition-all ' +
+                (x === tps ? 'border-red-500' : '')
+              }
+            >
+              {x}
+            </button>
+          ))}
         </div>
       </div>
       <RenderedGraph graph={graph} />
