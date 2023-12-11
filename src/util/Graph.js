@@ -201,9 +201,10 @@ class Graph {
    * @param {number} n how many vertices
    * @param {number} lo minimum weight
    * @param {number} hi maximum weight
+   * @param {bool} directed whether graph should be directed or not
    * @return {GraphInput}
    */
-  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1) {
+  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1, directed = false) {
     const nodes = [...new Array(n)].map(() =>
       Vector2.random().multiply(100).add({ x: 150, y: 150 }),
     );
@@ -218,16 +219,19 @@ class Graph {
     );
 
     // Generate edges based on nearby neighbors
+    const maximumNeighbors = directed ? 2 : 4;
     nodes.forEach((u, i) => {
       const nearest = nodes
         .map((v, j) => [Vector2.dist(u, v), j])
         .filter(([_d, idx]) => idx !== i)
         .sort((a, b) => a[0] - b[0])
-        .slice(0, 4); // take at most 4
+        .slice(0, maximumNeighbors); // take at most `maximumNeighbors`
       for (const [d, j] of nearest) {
         if (d > nearest[0][0] * 2) continue;
         adjacencyMatrix[i][j] = true;
-        adjacencyMatrix[j][i] = true;
+        if (!directed) {
+          adjacencyMatrix[j][i] = true;
+        }
       }
     });
 
@@ -235,7 +239,12 @@ class Graph {
     for (let i = 0; i < n; ++i) {
       for (let j = 0; j < n; ++j) {
         if (adjacencyMatrix[i][j]) {
-          edges.push([i, j, Math.ceil(Math.random() * (hi - lo) + lo)]);
+          const weight = Math.ceil(Math.random() * (hi - lo) + lo);
+          edges.push([i, j, weight]);
+          if (!directed) {
+            adjacencyMatrix[j][i] = false;
+            edges.push([j, i, weight]);
+          }
         }
       }
     }
@@ -258,7 +267,7 @@ class Graph {
       n: n,
       nodePositions: nodes,
       edges: edges,
-      directed: false,
+      directed: directed,
     };
   }
 
@@ -305,6 +314,8 @@ class Graph {
 
     const { n, nodePositions, edges, directed } = graphInput;
 
+    this.directed = directed;
+
     /**
      * vertex list
      * @private
@@ -321,14 +332,12 @@ class Graph {
      */
     this.edges = [...new Array(n)].map(() => []);
     for (const [u, v, c] of edges) {
-      this.edges[u].push(
-        new Edge(u, v, directed, c, initialEdgeAuxiliaryValue),
-      );
-      // if (!directed) {
-      //   this.edges[v].push(
-      //     new Edge(v, u, directed, c, initialEdgeAuxiliaryValue),
-      //   );
-      // }
+      const edge = new Edge(u, v, directed, c, initialEdgeAuxiliaryValue);
+      this.edges[u].push(edge);
+      if (!directed) {
+        const reversedEdge = new Edge(v, u, directed, c, initialEdgeAuxiliaryValue);
+        this.edges[v].push(reversedEdge);
+      }
     }
 
     // Initialize listeners
