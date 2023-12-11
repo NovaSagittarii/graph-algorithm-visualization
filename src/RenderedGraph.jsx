@@ -110,7 +110,7 @@ export default function RenderedGraph({ graph }) {
         p5.translate(u.x, u.y);
         const diff = u.clone().multiply(-1).add(v.clone());
         p5.rotate(diff.angle());
-        const RADIUS_OFFSET = 7;
+        const RADIUS_OFFSET = 8;
         if (graph.directed) {
           p5.line(RADIUS_OFFSET, 3, diff.magnitude() - RADIUS_OFFSET, 3);
           p5.translate(diff.magnitude() - RADIUS_OFFSET, 3);
@@ -122,19 +122,20 @@ export default function RenderedGraph({ graph }) {
       }
       p5.noStroke();
 
-      const impulse = vertices.map((u) => new Vector2(0, 0));
-      for (const edgeList of graph.edgeLists) {
-        for (const { from, to } of edgeList) {
-          if (from !== to) continue;
-          vertices[from].position.repulse(
-            vertices[to].position,
-            10,
-            5,
-            impulse[from],
-          );
+      const impulse = vertices.map(() => new Vector2(0, 0));
+      for (let u = 0; u < vertices.length; ++u) {
+        for (let v = 0; v < vertices.length; ++v) {
+          if (u === v) continue;
+          const connected = graph.edgeMatrix[u][v] !== null;
+          // prettier-ignore
+          vertices[u].position.repulse(vertices[v].position, 150, 1, impulse[u]);
+          // prettier-ignore
+          if (connected) {
+            vertices[u].position.repulse(vertices[v].position, 20, 3, impulse[u]);
+          }
         }
       }
-      vertices.forEach((v, i) => v.position.add(impulse[i]));
+      vertices.forEach((v, i) => v.position.add(impulse[i].multiply(0.5)));
 
       p5.pop();
     };

@@ -67,7 +67,7 @@ class GraphPlayer {
     this.lastReadTable = -1;
     this.lastReadTableRow = -1;
     this.lastReadTableColumn = -1;
-    
+
     /**
      * Whether the graph is directed or not
      */

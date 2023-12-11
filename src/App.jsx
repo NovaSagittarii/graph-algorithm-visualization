@@ -102,7 +102,7 @@ function App() {
       if (graph) {
         graph.step(Date.now());
       }
-    }, 1000/tps);
+    }, 1000 / tps);
     return () => {
       clearInterval(interval);
     };
@@ -118,13 +118,30 @@ function App() {
       <div>
         <div>
           <label> vertex count: {vertexCount} </label>
-          <input type='range' name='vertex-n' min={5} max={30} step={5} defaultValue={vertexCount} onMouseUp={({target}) => setVertexCount(+target.value)}/>
+          <input
+            type='range'
+            name='vertex-n'
+            min={5}
+            max={30}
+            step={5}
+            defaultValue={vertexCount}
+            onMouseUp={({ target }) => setVertexCount(+target.value)}
+          />
         </div>
         <div>
           <label> tick / second: {tps} </label>
-          {[1, 2, 5, 10, 20, 50, 100].map((x,index) => (<button key={index} onClick={() => setTps(x)} className={'bg-slate-100 hover:border transition-all ' + (x===tps ? 'border-red-500' : '')}>
-            {x}
-          </button>))}
+          {[1, 2, 5, 10, 20, 50, 100].map((x, index) => (
+            <button
+              key={index}
+              onClick={() => setTps(x)}
+              className={
+                'bg-slate-100 hover:border transition-all ' +
+                (x === tps ? 'border-red-500' : '')
+              }
+            >
+              {x}
+            </button>
+          ))}
         </div>
       </div>
       <RenderedGraph graph={graph} />
