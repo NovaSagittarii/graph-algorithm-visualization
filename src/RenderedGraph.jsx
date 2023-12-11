@@ -22,7 +22,7 @@ export default function RenderedGraph({ graph }) {
     };
 
     p5.mousePressed = () => {
-      graph.step(p5.frameCount);
+      // graph.step(p5.frameCount);
     };
 
     p5.draw = () => {
