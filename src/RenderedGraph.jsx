@@ -3,6 +3,7 @@ import { ReactP5Wrapper } from '@p5-wrapper/react';
 import Vector2 from './util/Vector2';
 import GraphPlayer from './util/GraphPlayer';
 import Table from './Table';
+import CodeTracker from './CodeTracker';
 
 /**
  * Fading flash duration when a node/edge is accessed (in ms)
@@ -133,7 +134,7 @@ export default function RenderedGraph({ graph }) {
           p5.push();
           p5.noStroke();
           p5.fill(0);
-          p5.translate(diff.magnitude()/2, 0);
+          p5.translate(diff.magnitude() / 2, 0);
           p5.rotate(-diff.angle());
           p5.text(weight, 0, 0);
           p5.pop();
@@ -162,7 +163,10 @@ export default function RenderedGraph({ graph }) {
   }
   return (
     <div>
-      <ReactP5Wrapper sketch={sketch} />
+      <div className='flex'>
+        <ReactP5Wrapper sketch={sketch} />
+        {graph?.code && <CodeTracker code={graph.code} />}
+      </div>
       {graph?.tables.map((table, index) => (
         <div key={index}>
           <Table table={table} />

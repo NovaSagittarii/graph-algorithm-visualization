@@ -1,3 +1,4 @@
+import CodeTracker from './CodeTracker';
 import EventfulTable from './EventfulTable';
 import Vector2 from './Vector2';
 
@@ -196,7 +197,7 @@ class Edge extends ColoredElement {
 class Graph {
   /**
    * Generates a roughly planar (it'll look decent when rendered) graph with n vertices.
-   * 
+   *
    * Weights will be set to [lo, hi] uniformly random.
    * @param {number} n how many vertices
    * @param {number} lo minimum weight
@@ -305,6 +306,8 @@ class Graph {
      * @type {Array.<[number, number, C, * => string]>}
      */
     this.tableInitialization = [];
+
+    this.code = [];
 
     /**
      * whether parameter initialization has finished (creating tables)
@@ -420,6 +423,26 @@ class Graph {
       });
     });
     return table;
+  }
+
+  /**
+   * (pre-finalization) add code
+   * @template [T=number]
+   * @param {T} codeList
+   * @return {CodeTracker<T>}
+   */
+  addCode(codeList) {
+    this.code = codeList;
+    const code = new CodeTracker(codeList);
+    code.addEventListener('write', () => {
+      this.events.push({
+        type: 'Code Write',
+        data: {
+          currentLine: code.currentLine,
+        },
+      });
+    });
+    return code;
   }
 
   /**
