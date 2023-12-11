@@ -106,7 +106,7 @@ function App() {
     return () => {
       clearInterval(interval);
     };
-  }, [tps]);
+  }, [tps, graph]);
 
   return (
     <div>
