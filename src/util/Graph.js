@@ -450,6 +450,22 @@ class Graph {
   }
 
   /**
+   * (post-finalization) get an edge by its endpoints
+   * @param {number} from
+   * @param {number} to
+   * @return {Edge<E>}
+   */
+  getEdge(from, to) {
+    if (!this.finalized) {
+      throw new Error(
+        'Graph needs to be finalized before you can start making graph queries.',
+      );
+    }
+    if (from < 0 || from >= this.edges.length || this.edges[from] === undefined || this.edges[from].find((edge) => edge.to === to) === undefined) return null;
+    return this.edges[from].find((edge) => edge.to === to).get();
+  }
+
+  /**
    * Utility function for wrapping a subroutine (can be stepped into)
    * @param name string
    * @param {()=>{}} callback
