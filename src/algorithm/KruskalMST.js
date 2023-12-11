@@ -82,6 +82,8 @@ class KruskalMST extends BaseAlgorithm {
       const to = edge[1];
       const weight = edge[2];
 
+      if (from > to) continue; // don't double count edges
+
       const uv = graph.getEdge(from,to);
 
       const fromSet = dsu.find_set(from);
