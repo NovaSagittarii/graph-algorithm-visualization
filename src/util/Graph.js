@@ -517,10 +517,10 @@ class Graph {
   }
 
   /**
-   * (post-finalization) get an edge by its endpoints
+   * (post-finalization) get an edge by its endpoints (0 to n-1)
    * @param {number} from
    * @param {number} to
-   * @return {Edge<E>}
+   * @return {Edge<E> | null}
    */
   getEdge(from, to) {
     if (!this.finalized) {
@@ -528,8 +528,7 @@ class Graph {
         'Graph needs to be finalized before you can start making graph queries.',
       );
     }
-    if (from < 0 || from >= this.edges.length || this.edges[from] === undefined || this.edges[from].find((edge) => edge.to === to) === undefined) return null;
-    return this.edges[from].find((edge) => edge.to === to).get();
+    return this.edges[from]?.find((edge) => edge.to === to)?.get() || null;
   }
 
   /**
