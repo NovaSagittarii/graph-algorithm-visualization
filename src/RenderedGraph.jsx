@@ -216,7 +216,7 @@ export default function RenderedGraph({ graph }) {
       }
 
       // Make nodes draggable
-      if (p5.mouseIsPressed) {
+      if (p5.mousePressed) {
         if (dragged === null) {
           for (let i = 0; i < vertices.length; ++i) {
             const { position } = vertices[i];
@@ -225,11 +225,12 @@ export default function RenderedGraph({ graph }) {
               dragged = i;
             }
           }
-        } else {
-          const { position } = vertices[dragged];
-          position.x = p5.mouseX;
-          position.y = p5.mouseY;
         }
+      }
+      if (p5.mouseIsPressed && dragged !== null) {
+        const { position } = vertices[dragged];
+        position.x = p5.mouseX;
+        position.y = p5.mouseY;
       } else {
         dragged = null;
       }
