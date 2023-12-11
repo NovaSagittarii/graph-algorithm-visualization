@@ -102,7 +102,7 @@ class GraphPlayer {
     let depth = 0;
     do {
       const event = this.events[this.pc++];
-      console.log(event);
+      //   console.log(event);
       try {
         const { type, data } = event;
         switch (type) {
@@ -124,12 +124,23 @@ class GraphPlayer {
             }
             break;
           }
+          case 'highlightAdd': {
+            const { id, type, color } = data;
+            if (type === 'vertex') {
+              this.vertices[id].addHighlight(color);
+            } else {
+              this.edgeMatrix[id[0]][id[1]].addHighlight(color);
+            }
+            break;
+          }
           case 'subroutineStart':
             ++depth;
             break;
           case 'subroutineEnd':
             --depth;
             break;
+          default:
+            console.warn(`Implementation for event <${type}> missing`);
         }
       } catch (error) {
         console.error('Failed to process instruction');

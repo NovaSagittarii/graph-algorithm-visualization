@@ -22,6 +22,7 @@ class BFS extends BaseAlgorithm {
         if (visited) continue;
         u.setAuxiliaryValue(0, true); // mark as visited
         u.setColor(1);
+        u.addHighlight(hops + 1);
 
         let neighbors;
         graph.subroutine('scan neighbors', () => {
@@ -33,7 +34,7 @@ class BFS extends BaseAlgorithm {
           const v = graph.getVertex(to);
           if (v.getAuxiliaryValue(0)) continue;
           nextFrontier.push(to);
-          v.addHighlight(hops);
+          // v.addHighlight(hops+1);
         }
       }
       frontier = nextFrontier;

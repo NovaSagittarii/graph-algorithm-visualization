@@ -34,6 +34,11 @@ class ColoredElement extends EventTarget {
     this.highlights = new Set();
 
     /**
+     * @type {number} highlight color that was just used
+     */
+    this.highlight = 0;
+
+    /**
      * @protected @type {(Array.<*> & T) | null} auxiliary values (for rendering)
      */
     this.auxiliary = aux && aux.slice(0); // make a COPY here since it's initialized many times
@@ -56,6 +61,7 @@ class ColoredElement extends EventTarget {
    * @return {ColoredElement<T>} itself
    */
   addHighlight(color) {
+    this.highlight = color;
     this.dispatchEvent(new Event('highlightAdd'));
     this.highlights.add(color);
     return this;
@@ -67,6 +73,7 @@ class ColoredElement extends EventTarget {
    * @return {ColoredElement<T>} itself
    */
   removeHighlight(color) {
+    this.highlight = color;
     this.dispatchEvent(new Event('highlightRemove'));
     this.highlights.delete(color);
     return this;
@@ -329,15 +336,15 @@ class Graph {
      */
     const addListeners = (e, id, type) => {
       e.addEventListener('color', ({ target }) => {
-        const { color } = target;
+        const { color } = target; // get the color that was just set
         this.events.push({ type: 'color', data: { id, color, type } });
       });
       e.addEventListener('highlightAdd', ({ target }) => {
-        const { color } = target;
+        const color = target.highlight;
         this.events.push({ type: 'highlightAdd', data: { id, color, type } });
       });
       e.addEventListener('highlightRemove', ({ target }) => {
-        const { color } = target;
+        const color = target.highlight;
         this.events.push({
           type: 'highlightRemove',
           data: { id, color, type },
