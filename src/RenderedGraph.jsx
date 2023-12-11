@@ -78,13 +78,13 @@ export default function RenderedGraph({ graph }) {
       const bbox = { xl: 0, xr: p5.width, yt: 0, yb: p5.height };
       const sites = [];
       for (const vertex of vertices) {
-        // if (vertex.highlights.size === 0) {
-        //   sites.push({
-        //     x: vertex.position.x,
-        //     y: vertex.position.y,
-        //     color: 0,
-        //   });
-        // }
+        if (vertex.highlights.size === 0) {
+          sites.push({
+            x: vertex.position.x,
+            y: vertex.position.y,
+            color: 0,
+          });
+        }
         for (const color of vertex.highlights) {
           sites.push({
             x: vertex.position.x,
