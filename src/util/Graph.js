@@ -372,13 +372,14 @@ class Graph {
   /**
    * (pre-finalization) creates a table (to track something in memory)
    * @template [T=number]
+   * @param {string} name
    * @param {number} rows
    * @param {number} columns
    * @param {T} initialValue
    * @param {null | (T => string)} cellToString
    * @return {EventfulTable<T>}
    */
-  createTable(rows, columns, initialValue = 0, cellToString = null) {
+  createTable(name, rows, columns, initialValue = 0, cellToString = null) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
     }
@@ -386,9 +387,9 @@ class Graph {
      * table ID (used to reference itself in the events list)
      */
     const id = this.tableInitialization.length;
-    this.tableInitialization.push([rows, columns, initialValue, cellToString]);
+    this.tableInitialization.push([name, rows, columns, initialValue, cellToString]);
 
-    const table = new EventfulTable(rows, columns, initialValue, cellToString);
+    const table = new EventfulTable(name, rows, columns, initialValue, cellToString);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',

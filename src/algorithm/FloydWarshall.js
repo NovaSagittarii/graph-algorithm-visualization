@@ -6,8 +6,8 @@ class FloydWarshall extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, null, null);
-    const weights = graph.createTable(graphInput.n, graphInput.n, Infinity);
-    const predecessors = graph.createTable(graphInput.n, graphInput.n, null);
+    const weights = graph.createTable("Table", graphInput.n, graphInput.n, Infinity);
+    const predecessors = graph.createTable("Table", graphInput.n, graphInput.n, null);
     graph.finalize();
 
     // --- process graph

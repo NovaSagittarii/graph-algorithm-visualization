@@ -18,6 +18,7 @@ export default function Table({ table }) {
 
   return (
     <div className='flex flex-col p-1 bg-slate-100 rounded-md w-fit m-1'>
+      <h1 className='text-center text-xl font-bold text-slate-900'>{table.name}</h1>
       {table.matrix.map((row, i) => (
         <div key={i} className='flex flex-row m-1'>
           {row.map((cell, j) => (

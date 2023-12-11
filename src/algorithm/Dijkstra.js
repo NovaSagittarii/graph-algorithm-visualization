@@ -7,8 +7,8 @@ class Dijkstra extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, [false], null);
-    const distance = graph.createTable(1, graphInput.n, Infinity);
-    const parent = graph.createTable(1, graphInput.n, null);
+    const distance = graph.createTable("Table", 1, graphInput.n, Infinity);
+    const parent = graph.createTable("Table", 1, graphInput.n, null);
     graph.finalize();
 
     // --- process graph

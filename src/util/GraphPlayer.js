@@ -51,7 +51,7 @@ class GraphPlayer {
     Object.freeze(this.events);
 
     this.tables = graph.tableInitialization.map(
-      ([n, m, c, mapping]) => new EventfulTable(n, m, c, mapping),
+      ([a, n, m, c, mapping]) => new EventfulTable(a, n, m, c, mapping),
     );
     this.vertices = graph.vertices.map(
       (vertex) =>
