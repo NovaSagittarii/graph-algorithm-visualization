@@ -96,7 +96,7 @@ export default function RenderedGraph({ graph }) {
       // --- Drawing edges
       p5.stroke(0);
       for (const edge of edges) {
-        const { from, to, lastRead, color } = edge;
+        const { from, to, lastRead, color, weight } = edge;
         const u = vertices[from].position;
         const v = vertices[to].position;
         // prettier-ignore
@@ -117,6 +117,13 @@ export default function RenderedGraph({ graph }) {
           p5.line(0, 0, -3, 3);
         } else {
           p5.line(RADIUS_OFFSET, 0, diff.magnitude() - RADIUS_OFFSET, 0);
+          p5.push();
+          p5.noStroke();
+          p5.fill(0);
+          p5.translate(diff.magnitude()/2, 0);
+          p5.rotate(-diff.angle());
+          p5.text(weight, 0, 0);
+          p5.pop();
         }
         p5.pop();
       }
