@@ -3,6 +3,7 @@ import { ReactP5Wrapper } from '@p5-wrapper/react';
 import Vector2 from './util/Vector2';
 import GraphPlayer from './util/GraphPlayer';
 import Table from './Table';
+import CodeTracker from './CodeTracker';
 import Voronoi from 'Voronoi';
 
 /**
@@ -171,6 +172,7 @@ export default function RenderedGraph({ graph }) {
         const { from, to, lastRead, color, weight } = edge;
         const u = vertices[from].position;
         const v = vertices[to].position;
+        if (!graph.directed && from < to) continue; // draw only one of them when UNDIRECTED
         // prettier-ignore
         p5.stroke(
           255 * (color % 2),
@@ -184,9 +186,21 @@ export default function RenderedGraph({ graph }) {
         p5.rotate(diff.angle());
         const RADIUS_OFFSET = 8;
         if (graph.directed) {
-          p5.line(RADIUS_OFFSET, 3, diff.magnitude() - RADIUS_OFFSET, 3);
-          p5.translate(diff.magnitude() - RADIUS_OFFSET, 3);
+          const biconnected = graph.edgeMatrix[from][to] && graph.edgeMatrix[to][from];
+          const minorAxisOffset = biconnected ? 3 : 0
+          p5.line(RADIUS_OFFSET, minorAxisOffset, diff.magnitude() - RADIUS_OFFSET, minorAxisOffset);
+          p5.push();
+          p5.translate(diff.magnitude()/2, 5);
+          p5.rotate(-diff.angle());
+          p5.noStroke();
+          p5.fill(0);
+          p5.text(weight, 0, 0);
+          p5.pop();
+          p5.translate(diff.magnitude() - RADIUS_OFFSET, minorAxisOffset);
           p5.line(0, 0, -3, 3);
+          if (!biconnected) {
+            p5.line(0, 0, -3, -3);
+          }
         } else {
           p5.line(RADIUS_OFFSET, 0, diff.magnitude() - RADIUS_OFFSET, 0);
           p5.push();
@@ -243,7 +257,10 @@ export default function RenderedGraph({ graph }) {
   }
   return (
     <div>
-      <ReactP5Wrapper sketch={sketch} />
+      <div className='flex'>
+        <ReactP5Wrapper sketch={sketch} />
+        {graph?.code && <CodeTracker code={graph.code} />}
+      </div>
       {graph?.tables.map((table, index) => (
         <div key={index}>
           <Table table={table} />
