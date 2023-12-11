@@ -30,6 +30,12 @@ function App() {
       },
     },
     {
+      label: 'Negative Randomize',
+      callback: () => {
+        setGraphInput(Graph.generateRoughlyPlanarGraphWithNegativeEdges(20, -10, 100));
+      },
+    },
+    {
       label: 'DFS',
       callback: () => {
         setAlg(new DFS());
