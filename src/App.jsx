@@ -100,7 +100,7 @@ function App() {
   ];
 
   useEffect(() => {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount), edgeWeightRange[0], edgeWeightRange[1]);
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1]));
   }, [vertexCount, edgeWeightRange]);
   useEffect(() => {
     if (graphInput) {
