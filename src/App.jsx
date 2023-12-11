@@ -16,11 +16,17 @@ import ReachabilityQuery from './algorithm/ReachabilityQuery';
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
   const [tps, setTps] = useState(10);
+  const [edgeWeightRange, setEdgeWeightRange] = useState([1, 1]);
   const [graphInput, setGraphInput] = useState(
     Graph.generateRoughlyPlanarGraph(vertexCount),
   );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
+
+  function regenerateGraph() {
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount), edgeLo, edgeHi);
+  }
+
   /**
    * @type {Array.<{label:string, callback:()=>{}}>}
    */
@@ -28,13 +34,13 @@ function App() {
     {
       label: 'Randomize',
       callback: () => {
-        setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
+        setEdgeWeightRange([1, 1]);
       },
     },
     {
       label: 'Negative Randomize',
       callback: () => {
-        setGraphInput(Graph.generateRoughlyPlanarGraphWithNegativeEdges(20, -10, 100));
+        setEdgeWeightRange([-10, 100]);
       },
     },
     {
@@ -94,8 +100,8 @@ function App() {
   ];
 
   useEffect(() => {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
-  }, [vertexCount]);
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount), edgeWeightRange[0], edgeWeightRange[1]);
+  }, [vertexCount, edgeWeightRange]);
   useEffect(() => {
     if (graphInput) {
       const processedGraph = alg.run(graphInput);

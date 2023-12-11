@@ -195,12 +195,15 @@ class Edge extends ColoredElement {
  */
 class Graph {
   /**
-   * generates a roughly planar (it'll look decent when rendered) graph with n vertices
+   * Generates a roughly planar (it'll look decent when rendered) graph with n vertices.
+   * 
+   * Weights will be set to [lo, hi] uniformly random.
    * @param {number} n how many vertices
-   * @param {number} c maximum weight (weights will be set to [1, c] uniformly random)
+   * @param {number} lo minimum weight
+   * @param {number} hi maximum weight
    * @return {GraphInput}
    */
-  static generateRoughlyPlanarGraph(n, c = 1) {
+  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1) {
     const nodes = [...new Array(n)].map(() =>
       Vector2.random().multiply(100).add({ x: 150, y: 150 }),
     );
@@ -232,74 +235,7 @@ class Graph {
     for (let i = 0; i < n; ++i) {
       for (let j = 0; j < n; ++j) {
         if (adjacencyMatrix[i][j]) {
-          edges.push([i, j, Math.ceil(Math.random() * c)]);
-        }
-      }
-    }
-
-    // Space out vertices
-    for (let t = 0; t < 50; ++t) {
-      const impulse = nodes.map((u) => new Vector2(0, 0));
-      nodes.forEach((u, i) => {
-        for (const v of nodes) {
-          if (u === v) continue;
-          u.repulse(v, 100, 10, impulse[i]);
-        }
-      });
-      for (let i = 0; i < n; ++i) {
-        nodes[i].add(impulse[i].multiply(1));
-      }
-    }
-
-    return {
-      n: n,
-      nodePositions: nodes,
-      edges: edges,
-      directed: false,
-    };
-  }
-
-  /**
-   * generates a roughly planar (it'll look decent when rendered) graph with n vertices, but now with negative edges
-   * @param {number} n how many vertices
-   * @param {number} c maximum weight (weights will be set to [b, c] uniformly random)
-   * @param {number} b minimum weight (weights will be set to [b, c] uniformly random)
-   * @return {GraphInput}
-   * @see {@link Graph.generateRoughlyPlanarGraph}
-   */
-  static generateRoughlyPlanarGraphWithNegativeEdges(n, c = 1, b = -1) {
-    const nodes = [...new Array(n)].map(() =>
-      Vector2.random().multiply(100).add({ x: 150, y: 150 }),
-    );
-
-    /**
-     * @type {Array.<[number, number, number]>}
-     */
-    const edges = [];
-
-    const adjacencyMatrix = [...new Array(n)].map(() =>
-      [...new Array(n)].map(() => false),
-    );
-
-    // Generate edges based on nearby neighbors
-    nodes.forEach((u, i) => {
-      const nearest = nodes
-        .map((v, j) => [Vector2.dist(u, v), j])
-        .filter(([_d, idx]) => idx !== i)
-        .sort((a, b) => a[0] - b[0])
-        .slice(0, 4); // take at most 4
-      for (const [d, j] of nearest) {
-        if (d > nearest[0][0] * 2) continue;
-        adjacencyMatrix[i][j] = true;
-        adjacencyMatrix[j][i] = true;
-      }
-    });
-
-    // only use unique edges
-    for (let i = 0; i < n; ++i) {
-      for (let j = 0; j < n; ++j) {
-        if (adjacencyMatrix[i][j]) {
-          edges.push([i, j, Math.ceil(Math.random() * (c - b) + b)]);
+          edges.push([i, j, Math.ceil(Math.random() * (hi - lo) + lo)]);
         }
       }
     }
