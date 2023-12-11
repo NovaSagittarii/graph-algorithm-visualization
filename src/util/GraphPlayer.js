@@ -139,6 +139,24 @@ class GraphPlayer {
             }
             break;
           }
+          case 'highlightRemove': {
+            const { id, type, color } = data;
+            if (type === 'vertex') {
+              this.vertices[id].removeHighlight(color);
+            } else {
+              this.edgeMatrix[id[0]][id[1]].removeHighlight(color);
+            }
+            break;
+          }
+          case 'highlightClear': {
+            const { id, type } = data;
+            if (type === 'vertex') {
+              this.vertices[id].clearHighlight();
+            } else {
+              this.edgeMatrix[id[0]][id[1]].clearHighlight();
+            }
+            break;
+          }
           case 'tableRead':
           case 'tableWrite': {
             const { id, row, column } = data;
