@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import RenderedGraph from './RenderedGraph';
 import './App.css';
 import Graph from './util/Graph';
@@ -6,7 +6,9 @@ import GraphPlayer from './util/GraphPlayer';
 import BFS from './algorithm/BFS';
 
 function App() {
-  const [graphInput, setGraphInput] = useState(Graph.generateRoughlyPlanarGraph(20));
+  const [graphInput, setGraphInput] = useState(
+    Graph.generateRoughlyPlanarGraph(20),
+  );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
   /**
@@ -23,8 +25,8 @@ function App() {
       label: 'BFS',
       callback: () => {
         setAlg(new BFS());
-      }
-    }
+      },
+    },
   ];
   useEffect(() => {
     if (graphInput) {
@@ -36,12 +38,12 @@ function App() {
 
   return (
     <div>
-      {
-        utilities.map(({label, callback}) => (<button onClick={callback}>
+      {utilities.map(({ label, callback }, index) => (
+        <button onClick={callback} key={index}>
           {label}
-        </button>))
-      }
-      <RenderedGraph graph={graph}/>
+        </button>
+      ))}
+      <RenderedGraph graph={graph} />
     </div>
   );
 }

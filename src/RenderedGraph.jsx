@@ -1,13 +1,19 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { ReactP5Wrapper } from '@p5-wrapper/react';
-import Graph from './util/Graph';
-import BFS from './algorithm/BFS';
-import GraphPlayer from './util/GraphPlayer';
 import Vector2 from './util/Vector2';
+import GraphPlayer from './util/GraphPlayer';
+import Table from './Table';
 
 const FADE_DURATION = 15;
 
+/**
+ *
+ * @param {{graph: GraphPlayer|null}} props
+ * @returns
+ */
 export default function RenderedGraph({ graph }) {
+  const [tables, setTables] = useState([]);
+
   /**
    * @param {import("@p5-wrapper/react").P5CanvasInstance} p5
    */
@@ -23,7 +29,10 @@ export default function RenderedGraph({ graph }) {
 
     p5.draw = () => {
       if (!graph) return;
-      if (p5.frameCount % 5 === 0) graph.step(p5.frameCount);
+      if (p5.frameCount % 5 === 0) {
+        graph.step(p5.frameCount);
+        setTables(graph.tables);
+      }
       p5.background(250);
       p5.push();
       // p5.ellipse(p5.mouseX, p5.mouseY, 10, 10);
@@ -129,5 +138,14 @@ export default function RenderedGraph({ graph }) {
       p5.pop();
     };
   }
-  return <ReactP5Wrapper sketch={sketch} />;
+  return (
+    <div>
+      <ReactP5Wrapper sketch={sketch} />
+      {tables.map((table, index) => (
+        <div key={index}>
+          <Table table={table} />
+        </div>
+      ))}
+    </div>
+  );
 }
