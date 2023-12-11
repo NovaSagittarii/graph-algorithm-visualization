@@ -17,13 +17,18 @@ export default function Table({ table }) {
   }, [table]);
 
   return (
-    <div className='flex flex-col p-1 bg-slate-100 rounded-md'>
+    <div className='flex flex-col p-1 bg-slate-100 rounded-md w-fit m-1'>
       {table.matrix.map((row, i) => (
         <div key={i} className='flex flex-row m-1'>
           {row.map((cell, j) => (
             <div
               key={j}
-              className='bg-slate-300 rounded-md m-1 w-8 h-8 flex items-center justify-center'
+              className={
+                'bg-slate-300 rounded-md m-1 w-8 h-8 flex items-center justify-center transition-all ' +
+                (i === table.lastRow && j === table.lastColumn
+                  ? 'border-2 border-red-500'
+                  : '')
+              }
             >
               {cell}
             </div>
