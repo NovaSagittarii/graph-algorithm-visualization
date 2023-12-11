@@ -111,9 +111,13 @@ export default function RenderedGraph({ graph }) {
         const diff = u.clone().multiply(-1).add(v.clone());
         p5.rotate(diff.angle());
         const RADIUS_OFFSET = 7;
-        p5.line(RADIUS_OFFSET, 3, diff.magnitude() - RADIUS_OFFSET, 3);
-        p5.translate(diff.magnitude() - RADIUS_OFFSET, 3);
-        p5.line(0, 0, -3, 3);
+        if (graph.directed) {
+          p5.line(RADIUS_OFFSET, 3, diff.magnitude() - RADIUS_OFFSET, 3);
+          p5.translate(diff.magnitude() - RADIUS_OFFSET, 3);
+          p5.line(0, 0, -3, 3);
+        } else {
+          p5.line(RADIUS_OFFSET, 0, diff.magnitude() - RADIUS_OFFSET, 0);
+        }
         p5.pop();
       }
       p5.noStroke();
