@@ -67,8 +67,8 @@ class KruskalMST extends BaseAlgorithm {
         const u = graph.getVertex(i);
         
         // Assign each vertex a color
-        const ucolor = dsu.find_set(i);
-        u.setColor(ucolor);
+        const ucolor = dsu.find_set(i) % 7;
+        u.setColor(ucolor+1);
       }
     });
 
@@ -89,16 +89,16 @@ class KruskalMST extends BaseAlgorithm {
       if (fromSet != toSet) {
         dsu.union_sets(fromSet, toSet);
         const queryParent = dsu.find_set(from);
-        
+
         usedEdges.push(edgeIndex);
-        uv.setColor(queryParent);
+        uv.setColor((queryParent%7)+1);
 
         graph.subroutine('update tree colors', () => {
 
           for (let i = 0; i < graphInput.n; ++i) {
             if (dsu.find_set(i) == queryParent) {
               const treeNode = graph.getVertex(i);
-              treeNode.setColor(queryParent);
+              treeNode.setColor((queryParent%7)+1);
             }
           }
 
