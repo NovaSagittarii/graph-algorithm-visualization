@@ -258,7 +258,7 @@ class Graph {
       n: n,
       nodePositions: nodes,
       edges: edges,
-      directed: false,
+      directed: hi !== lo,
     };
   }
 
@@ -304,6 +304,8 @@ class Graph {
     this.finalized = false;
 
     const { n, nodePositions, edges, directed } = graphInput;
+
+    this.directed = directed;
 
     /**
      * vertex list
