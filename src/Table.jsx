@@ -30,7 +30,7 @@ export default function Table({ table }) {
                   : '')
               }
             >
-              {cell}
+              {table.cellToString ? table.cellToString(cell) : cell}
             </div>
           ))}
         </div>
