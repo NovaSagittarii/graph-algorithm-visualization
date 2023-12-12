@@ -84,17 +84,18 @@ class ToplogicalSort extends BaseAlgorithm {
   /** @override */
   run(graphInput) {
     // --- set up auxiliary values then finalize
+    console.log(graphInput);
     const graph = new Graph(graphInput, [0], null);
     const result = graph.createTable({
       name: 'Result',
       rows: 1,
-      columns: graphInput.n,
+      cols: graphInput.n,
       initialValue: null,
     });
     const table = graph.createTable({
       name: 'Table',
       rows: 1,
-      columns: graphInput.n,
+      cols: graphInput.n,
       initialValue: 0,
     });
     graph.finalize();
