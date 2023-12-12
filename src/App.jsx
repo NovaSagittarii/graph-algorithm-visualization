@@ -12,7 +12,7 @@ import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
 import TarjanSCC from './algorithm/TarjanSCC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
-import Topo from './algorithm/Topo'
+import TopologicalSort from './algorithm/TopologicalSort'
 
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
@@ -96,9 +96,9 @@ function App() {
       },
     },
     {
-      label: 'Topo',
+      label: 'Kahn\'s Topological Sort',
       callback: () => {
-        setAlg(new Topo());
+        setAlg(new TopologicalSort());
       },
     },
   ];
