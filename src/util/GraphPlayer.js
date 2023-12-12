@@ -1,3 +1,4 @@
+import CodeTracker from './CodeTracker';
 import EventfulTable from './EventfulTable';
 import Graph, { Edge, Vertex } from './Graph';
 
@@ -53,6 +54,7 @@ class GraphPlayer {
     this.tables = graph.tableInitialization.map(
       ([a, n, m, c, mapping]) => new EventfulTable(a, n, m, c, mapping),
     );
+    this.code = new CodeTracker(graph.code);
     this.vertices = graph.vertices.map(
       (vertex) =>
         new VertexLR(
@@ -123,6 +125,11 @@ class GraphPlayer {
               this.vertices[id].lastRead = now;
             } else {
               this.edgeMatrix[id[0]][id[1]].lastRead = now;
+              if (!this.directed) {
+                // on an undirected graph, they should be treated as the same
+                // note: when undirected, avoid double count edges in the algorithm
+                this.edgeMatrix[id[1]][id[0]].lastRead = now;
+              }
             }
             break;
           }
@@ -132,6 +139,12 @@ class GraphPlayer {
               this.vertices[id].setColor(color);
             } else {
               this.edgeMatrix[id[0]][id[1]].setColor(color);
+              if (!this.directed) {
+                // when undirected, color both forward and backward edges (they get rendered separately since
+                // endpoint data is directed and stored on the edge)
+                // note: when undirected, avoid double count edges in the algorithm
+                this.edgeMatrix[id[1]][id[0]].setColor(color);
+              }
             }
             break;
           }
@@ -163,6 +176,10 @@ class GraphPlayer {
             break;
           }
           case 'tableRead':
+            break;
+          case 'Code Write':
+            this.code.setLine(data.currentLine);
+            break;
           case 'tableWrite': {
             const { id, row, column } = data;
             this.lastReadTable = id;
