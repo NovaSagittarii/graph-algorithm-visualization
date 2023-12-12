@@ -49,8 +49,13 @@ class PrimMST extends BaseAlgorithm {
 
         if (lightEdge == -1) {
           console.log("Something went big bad with prims");
+        } else {
+          console.log(graphInput.edges[lightEdge]);
+          console.log("Pushing an edge to the tree");
+          mstEdges.push(lightEdge);
+          setS.push(graphInput.edges[lightEdge][1]);
+          console.log("Pushing to S");
         }
-        mstEdges.push(lightEdge);
       }
     }
 
@@ -58,12 +63,12 @@ class PrimMST extends BaseAlgorithm {
       for (const edgeid of mstEdges) {
         const edgeTuple = graphInput.edges[edgeid];
         const edge = graph.getEdge(edgeTuple[0], edgeTuple[1]);
-        edge.setColor(2);
+        edge.setColor(4);
 
         const u = graph.getVertex(edgeTuple[0]);
-        u.setColor(2);
+        u.setColor(4);
         const v = graph.getVertex(edgeTuple[1]);
-        v.setColor(2);
+        v.setColor(4);
       }
     });
 
