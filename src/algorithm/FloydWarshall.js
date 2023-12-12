@@ -6,10 +6,16 @@ class FloydWarshall extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, null, null);
+    const collabels = [...Array(graphInput.n).keys()].map((x) => `${x}`);
+    const rowlabels = [...Array(graphInput.n).keys()].map((x) => `${x}`);
     const weights = graph.createTable({
       name: 'Weights',
       rows: graphInput.n,
       cols: graphInput.n,
+      rowheader: 'From',
+      colheader: 'To',
+      rowlabels: rowlabels,
+      collabels: collabels,
       initialValue: Infinity,
       stringMapping: (x) => (x === Infinity ? '∞' : x),
     });
@@ -17,6 +23,10 @@ class FloydWarshall extends BaseAlgorithm {
       name: 'Predecessors',
       rows: graphInput.n,
       cols: graphInput.n,
+      rowheader: 'From',
+      colheader: 'To',
+      rowlabels: rowlabels,
+      collabels: collabels,
       initialValue: null,
       stringMapping: (x) => (x === null ? '∅' : x),
     });

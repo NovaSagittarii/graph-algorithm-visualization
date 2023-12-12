@@ -64,11 +64,14 @@ class DFS extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, [false], [false]);
+    const collabels = [...Array(graphInput.n).keys()].map((x) => `${x}`);
     const arrivaldeparture = graph.createTable({
       name: "Arrival and Departure",
       rows: 1,
       cols: graphInput.n,
       initialValue: [null, null],
+      colheader: "Node",
+      collabels: collabels,
       stringMapping: (cell) => cell.map(x => x === null ? "-" : x).join('/'),
     });
     this.plane = 0;
