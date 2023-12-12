@@ -51,11 +51,21 @@ class PrimMST extends BaseAlgorithm {
           console.log("Something went big bad with prims");
         }
         mstEdges.push(lightEdge);
-
-        
-
       }
     }
+
+    graph.subroutine('final coloring', () => {
+      for (const edgeid of mstEdges) {
+        const edgeTuple = graphInput.edges[edgeid];
+        const edge = graph.getEdge(edgeTuple[0], edgeTuple[1]);
+        edge.setColor(2);
+
+        const u = graph.getVertex(edgeTuple[0]);
+        u.setColor(2);
+        const v = graph.getVertex(edgeTuple[1]);
+        v.setColor(2);
+      }
+    });
 
     return graph;
   }
