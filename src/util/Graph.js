@@ -206,7 +206,13 @@ class Graph {
    * @param {bool} allowCycles whether graph can have cycles
    * @return {GraphInput}
    */
-  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1, directed = false, allowCycles = true) {
+  static generateRoughlyPlanarGraph(
+    n,
+    lo = 1,
+    hi = 1,
+    directed = false,
+    allowCycles = true,
+  ) {
     const nodes = [...new Array(n)].map(() =>
       Vector2.random().multiply(100).add({ x: 150, y: 150 }),
     );
@@ -240,8 +246,8 @@ class Graph {
     // when directed acyclic, add some more edges so its at least connected
     if (directed && !allowCycles) {
       for (let i = 0; i < n; ++i) {
-        for (let j = i+1; j < n; ++j) {
-          if (Math.random() < 1/n) {
+        for (let j = i + 1; j < n; ++j) {
+          if (Math.random() < 1 / n) {
             adjacencyMatrix[i][j] = true;
           }
         }
@@ -351,7 +357,13 @@ class Graph {
       const edge = new Edge(u, v, directed, c, initialEdgeAuxiliaryValue);
       this.edges[u].push(edge);
       if (!directed) {
-        const reversedEdge = new Edge(v, u, directed, c, initialEdgeAuxiliaryValue);
+        const reversedEdge = new Edge(
+          v,
+          u,
+          directed,
+          c,
+          initialEdgeAuxiliaryValue,
+        );
         this.edges[v].push(reversedEdge);
       }
     }

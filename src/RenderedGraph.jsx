@@ -51,13 +51,13 @@ export default function RenderedGraph({ graph }) {
       p5.noFill(0);
       if (p5.dist(p5.mouseX, p5.mouseY, 50, 150) < 30) {
         p5.fill(0, 50);
-        if (mousePressed){
+        if (mousePressed) {
           forceEnabled = !forceEnabled;
         }
       }
       p5.ellipse(50, 150, 60);
       p5.fill(0);
-      p5.text(forceEnabled ? "Force ON" : "Force OFF", 50, 150);
+      p5.text(forceEnabled ? 'Force ON' : 'Force OFF', 50, 150);
 
       const { vertices, edges } = graph;
       p5.noFill();
@@ -65,13 +65,16 @@ export default function RenderedGraph({ graph }) {
       // --- center the graph
       let meanX = 0;
       let meanY = 0;
-      for (const {position} of graph.vertices) {
+      for (const { position } of graph.vertices) {
         const { x, y } = position;
         meanX += x;
         meanY += y;
       }
       p5.translate(p5.width / 2, p5.height / 2);
-      p5.translate(-meanX / graph.vertices.length, -meanY / graph.vertices.length);
+      p5.translate(
+        -meanX / graph.vertices.length,
+        -meanY / graph.vertices.length,
+      );
       const topLeftX = meanX / graph.vertices.length - p5.width / 2;
       const topLeftY = meanY / graph.vertices.length - p5.height / 2;
 
@@ -107,7 +110,12 @@ export default function RenderedGraph({ graph }) {
       // }
       // Use Voronoi on the highlight colors to draw the background, do not draw voronoi edge, color should be the same color as the highlight of the vertext it contains
       const voronoi = new Voronoi();
-      const bbox = { xl: topLeftX, xr: topLeftX+p5.width, yt: topLeftY, yb: topLeftY+p5.height };
+      const bbox = {
+        xl: topLeftX,
+        xr: topLeftX + p5.width,
+        yt: topLeftY,
+        yb: topLeftY + p5.height,
+      };
       const sites = [];
       for (const vertex of vertices) {
         if (vertex.highlights.size === 0) {
@@ -133,7 +141,10 @@ export default function RenderedGraph({ graph }) {
         for (const halfedge of cell.halfedges) {
           const { x: xstart, y: ystart } = halfedge.getStartpoint();
           const { x: xend, y: yend } = halfedge.getEndpoint();
-          const key = `${Math.min(xstart, xend)} ${Math.min(ystart, yend)} ${Math.max(xstart, xend)} ${Math.max(ystart, yend)}`;
+          const key = `${Math.min(xstart, xend)} ${Math.min(
+            ystart,
+            yend,
+          )} ${Math.max(xstart, xend)} ${Math.max(ystart, yend)}`;
           if (sharedEdges.has(key)) {
             sharedEdges.get(key).push(cell);
           } else {
@@ -153,10 +164,14 @@ export default function RenderedGraph({ graph }) {
         p5.beginShape();
         // draw shape with rounded corners by stopping each edge a bit early and using curveVertex() to connect them
         for (let i = 0; i < cell.halfedges.length; i++) {
-          let { x: xstart, y: ystart } = cell.halfedges[i % cell.halfedges.length].getStartpoint();
-          let { x: xend, y: yend } = cell.halfedges[i % cell.halfedges.length].getEndpoint();
-          let { x: xnextstart, y: ynextstart } = cell.halfedges[(i + 1) % cell.halfedges.length].getStartpoint();
-          let { x: xnextend, y: ynextend } = cell.halfedges[(i + 1) % cell.halfedges.length].getEndpoint();
+          let { x: xstart, y: ystart } =
+            cell.halfedges[i % cell.halfedges.length].getStartpoint();
+          let { x: xend, y: yend } =
+            cell.halfedges[i % cell.halfedges.length].getEndpoint();
+          let { x: xnextstart, y: ynextstart } =
+            cell.halfedges[(i + 1) % cell.halfedges.length].getStartpoint();
+          let { x: xnextend, y: ynextend } =
+            cell.halfedges[(i + 1) % cell.halfedges.length].getEndpoint();
 
           // stop a bit early to curve the corner
           let xsub = (xend - xstart) * 0.2;
@@ -217,11 +232,17 @@ export default function RenderedGraph({ graph }) {
         p5.rotate(diff.angle());
         const RADIUS_OFFSET = 8;
         if (graph.directed) {
-          const biconnected = graph.edgeMatrix[from][to] && graph.edgeMatrix[to][from];
-          const minorAxisOffset = biconnected ? 3 : 0
-          p5.line(RADIUS_OFFSET, minorAxisOffset, diff.magnitude() - RADIUS_OFFSET, minorAxisOffset);
+          const biconnected =
+            graph.edgeMatrix[from][to] && graph.edgeMatrix[to][from];
+          const minorAxisOffset = biconnected ? 3 : 0;
+          p5.line(
+            RADIUS_OFFSET,
+            minorAxisOffset,
+            diff.magnitude() - RADIUS_OFFSET,
+            minorAxisOffset,
+          );
           p5.push();
-          p5.translate(diff.magnitude()/2, 5);
+          p5.translate(diff.magnitude() / 2, 5);
           p5.rotate(-diff.angle());
           p5.noStroke();
           p5.fill(0);
@@ -271,8 +292,16 @@ export default function RenderedGraph({ graph }) {
         if (dragged === null) {
           for (let i = 0; i < vertices.length; ++i) {
             const { position } = vertices[i];
-            const { x, y } = p5.createVector(translatedMouseX, translatedMouseY);
-            if (x > position.x - 15 && x < position.x + 15 && y > position.y - 15 && y < position.y + 15) {
+            const { x, y } = p5.createVector(
+              translatedMouseX,
+              translatedMouseY,
+            );
+            if (
+              x > position.x - 15 &&
+              x < position.x + 15 &&
+              y > position.y - 15 &&
+              y < position.y + 15
+            ) {
               dragged = i;
             }
           }

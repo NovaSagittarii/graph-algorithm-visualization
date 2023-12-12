@@ -6,7 +6,12 @@ class BellmanFord extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, null, null);
-    const length = graph.createTable(graphInput.n, graphInput.n + 1, Infinity, (x) => x > 1e9 ? '∞' : x);
+    const length = graph.createTable(
+      graphInput.n,
+      graphInput.n + 1,
+      Infinity,
+      (x) => (x > 1e9 ? '∞' : x),
+    );
     const parent = graph.createTable(graphInput.n, graphInput.n + 1, null);
 
     graph.finalize();
