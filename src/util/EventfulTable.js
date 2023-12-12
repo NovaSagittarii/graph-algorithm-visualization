@@ -6,12 +6,12 @@
  */
 class EventfulTable extends EventTarget {
   /**
-   * @param {number} rows 
-   * @param {number} columns 
-   * @param {T} initialValue 
+   * @param {number} rows
+   * @param {number} columns
+   * @param {T} initialValue
    * @param {T => string} toString mapping function for display
    */
-  constructor(rows, columns, initialValue = 0, toString = x => (x+"")) {
+  constructor(rows, columns, initialValue = 0, toString = (x) => x + '') {
     super();
     /**
      * @type {Array.<Array.<T>>}
