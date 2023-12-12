@@ -37,7 +37,7 @@ function App() {
     {
       label: 'Negative Randomize',
       callback: () => {
-        setEdgeWeightRange([-1, 9]);
+        setEdgeWeightRange([-5, 9]);
       },
     },
     {
@@ -127,7 +127,7 @@ function App() {
       <div>
         <div>
           <label> directed? </label>
-          <input type='checkbox' name='directedness' defaultChecked={directedGraph} onChange={({ target}) => setDirectedGraph(target.checked)}/>
+          <input type='checkbox' name='directedness' defaultChecked={directedGraph} onChange={({ target }) => setDirectedGraph(target.checked)} />
         </div>
         <div>
           <label> vertex count: {vertexCount} </label>
