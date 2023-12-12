@@ -36,7 +36,7 @@ class BellmanFord extends BaseAlgorithm {
           const newLength = length.get(from, iteration - 1) + weight;
           if (newLength < length.get(to, iteration)) {
             const edge = graph.getEdge(from, to);
-            edge.setColor(1);
+            edge.setColor(2);
             const oldedge = graph.getEdge(parent.get(to, iteration), to);
             if (oldedge) oldedge.setColor(0);
             length.set(to, iteration, newLength);
@@ -49,12 +49,37 @@ class BellmanFord extends BaseAlgorithm {
     }
 
     // Check if negative cycle exists
+    let cycles = [];
     for (let from = 0; from < graphInput.n; ++from) {
       const last = length.get(from, graphInput.n - 1);
       const extra = length.get(from, graphInput.n);
       if (last !== extra) {
         console.log(`Negative cycle detected at ${from}`);
-        break;
+        cycles.push(from);
+      }
+    }
+    for (const from of cycles) {
+      let v = from;
+      let iteration = graphInput.n;
+      let incycle = false;
+      while (iteration > 0) {
+        const to = parent.get(v, iteration);
+        if (to === null) break;
+        const edge = graph.getEdge(to, v);
+        if (incycle) {
+          edge.setColor(1);
+          const vertex = graph.getVertex(v);
+          vertex.addHighlight(1);
+        }
+        v = to;
+        if (v === from && incycle) {
+          break;
+        }
+        if (v === from && !incycle) {
+          incycle = true;
+          iteration = graphInput.n;
+        }
+        --iteration;
       }
     }
     return graph;

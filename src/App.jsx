@@ -38,7 +38,7 @@ function App() {
     {
       label: 'Negative Randomize',
       callback: () => {
-        setEdgeWeightRange([-1, 9]);
+        setEdgeWeightRange([-5, 9]);
       },
     },
     {
