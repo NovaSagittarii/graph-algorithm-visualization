@@ -1,35 +1,46 @@
 /**
  * @template T
+ * @typedef {Object} TableConfiguration
+ * @property {string} name Table display title
+ * @property {number} rows number of rows (height)
+ * @property {number} cols number of columns (width)
+ * @property {T} initialValue Initial cell value
+ * @property {Array.<string>} rowlabels
+ * @property {Array.<string>} collabels
+ * @property {(cell: T) => string} stringMapping cell to string mapping (for display)
+ */
+
+/**
+ * @template T
  * Table with event listeners for "read" (when get is called) and "write" (when set is called)
  *
  * TODO: any idea to set type annotations for eventListeners?
  */
 class EventfulTable extends EventTarget {
   /**
-   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowheader:string, rowlabels:string[], colheader:string, collabels:string[], stringMapping:T=>string}} TableField<T>
-   * @param {TableField<T>} tablefield
+   * @param {TableConfiguration<T>} tableConfiguration
    */
-  constructor(tablefield) {
+  constructor(tableConfiguration) {
     super();
     /**
      * @type {Array.<Array.<T>>}
      */
-    this.matrix = [...new Array(tablefield.rows)].map(() =>
-      [...new Array(tablefield.cols)].map(() => tablefield.initialValue),
+    this.matrix = [...new Array(tableConfiguration.rows)].map(() =>
+      [...new Array(tableConfiguration.cols)].map(() => tableConfiguration.initialValue),
     );
 
     // surely this doesn't lead to race condition?
     this.lastRow = -1;
     this.lastColumn = -1;
     this.lastWrite = -1;
-    this.name = tablefield.name;
-    this.rowlabels = tablefield.rowlabels;
-    this.collabels = tablefield.collabels;
-    this.rowheader = tablefield.rowheader;
-    this.colheader = tablefield.colheader;
+    this.name = tableConfiguration.name;
+    this.rowlabels = tableConfiguration.rowlabels;
+    this.collabels = tableConfiguration.collabels;
+    this.rowheader = tableConfiguration.rowheader;
+    this.colheader = tableConfiguration.colheader;
 
     /** @type {T => string} */
-    this.cellstringMapping = tablefield.stringMapping;
+    this.cellstringMapping = tableConfiguration.stringMapping;
   }
 
   /**
