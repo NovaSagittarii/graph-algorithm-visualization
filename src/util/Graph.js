@@ -411,7 +411,7 @@ class Graph {
   /**
    * (pre-finalization) creates a table (to track something in memory)
    * @template [T=number]
-   * @param {import('./EventfulTable').TableConfiguration} tableConfiguration
+   * @param {import('./EventfulTable').TableConfiguration<T>} tableConfiguration
    * @return {EventfulTable<T>}
    */
   createTable(tableConfiguration) {
