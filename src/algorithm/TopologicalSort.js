@@ -13,26 +13,26 @@ class ToplogicalSort extends BaseAlgorithm {
     // precalculating all incoming edges count
     let incoming = Array.from({ length: n }, () => []);
     graph.subroutine('precompute incoming edges', () => {
-        // keep track of all incoming edges by pushing them to an array of array of edges
+      // keep track of all incoming edges by pushing them to an array of array of edges
       for (const [from, to] of graphInput.edges) {
         incoming[to].push(graph.getEdge(from, to));
       }
     });
-    for(let i = 0 ; i < n; i++){
-        let u = graph.getVertex(i);
-        u.setColor(2);
-        for(const edge of incoming[i]){
-            edge.setColor(1);
-        }
-        graph.getVertex(i).setAuxiliaryValue(0, incoming[i].length);
-        table.set(0, i, graph.getVertex(i).getAuxiliaryValue(0));
+    for (let i = 0; i < n; i++) {
+      let u = graph.getVertex(i);
+      u.setColor(2);
+      for (const edge of incoming[i]) {
+        edge.setColor(1);
+      }
+      graph.getVertex(i).setAuxiliaryValue(0, incoming[i].length);
+      table.set(0, i, graph.getVertex(i).getAuxiliaryValue(0));
 
-        graph.subroutine('deallocate colors' , () => {
-            for(const edge of incoming[i]){
-                edge.setColor(0);
-            }
-            u.setColor(0);
-        });
+      graph.subroutine('deallocate colors', () => {
+        for (const edge of incoming[i]) {
+          edge.setColor(0);
+        }
+        u.setColor(0);
+      });
     }
     // old way of precomputing, changing for animation
     // for (let i = 0; i < n; i++) {
@@ -62,15 +62,15 @@ class ToplogicalSort extends BaseAlgorithm {
         result.set(0, counter, v); // adding to our topo sort (greedy)
         counter++;
         for (const { to } of graph.getNeighbors(v)) {
-            graph.getEdge(v, to).setColor(1);
+          graph.getEdge(v, to).setColor(1);
           // decrementing counts by incrementing
           vals[to][1] -= 1;
           table.set(0, to, vals[to][1]);
         }
         graph.subroutine('deallocate colors', () => {
-            for (const { to } of graph.getNeighbors(v)) {
-                graph.getEdge(v, to).setColor(0);
-            }
+          for (const { to } of graph.getNeighbors(v)) {
+            graph.getEdge(v, to).setColor(0);
+          }
         });
         u.setColor(2);
         vals[v][1] = -1; // to avoid recounting.
@@ -86,16 +86,21 @@ class ToplogicalSort extends BaseAlgorithm {
     // --- set up auxiliary values then finalize
     console.log(graphInput);
     const graph = new Graph(graphInput, [0], null);
+    const collabels = [...Array(graphInput.n).keys()].map((x) => `${x}`);
     const result = graph.createTable({
       name: 'Result',
       rows: 1,
       cols: graphInput.n,
+      colheader: 'Node',
+      collabels: collabels,
       initialValue: null,
     });
     const table = graph.createTable({
       name: 'Table',
       rows: 1,
       cols: graphInput.n,
+      colheader: 'Node',
+      collabels: collabels,
       initialValue: 0,
     });
     graph.finalize();

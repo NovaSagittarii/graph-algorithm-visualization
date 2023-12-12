@@ -27,16 +27,21 @@ class Dijkstra extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, [false], null);
+    const collabels = [...Array(graphInput.n).keys()].map((x) => `${x}`);
     const distance = graph.createTable({
       name: 'Distance',
       rows: 1,
       cols: graphInput.n,
+      colheader: 'Node',
+      collabels: collabels,
       initialValue: Infinity,
     });
     const parent = graph.createTable({
       name: 'Parent',
       rows: 1,
       cols: graphInput.n,
+      colheader: 'Node',
+      collabels: collabels,
       initialValue: null,
     });
     const code = graph.addCode(codeList);
