@@ -4,7 +4,7 @@ import Vector2 from './util/Vector2';
 import GraphPlayer from './util/GraphPlayer';
 import Table from './Table';
 import CodeTracker from './CodeTracker';
-import Voronoi from 'Voronoi';
+import Voronoi from 'voronoi';
 
 /**
  * Fading flash duration when a node/edge is accessed (in ms)
@@ -227,7 +227,7 @@ export default function RenderedGraph({ graph }) {
           100 + 155 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION),
         );
         // prettier-ignore
-        p5.strokeWeight(1 + 1 * Math.max(0, (2*FADE_DURATION + lastRead - Date.now()) / FADE_DURATION));
+        p5.strokeWeight(1 + 1 * Math.max(0, (2 * FADE_DURATION + lastRead - Date.now()) / FADE_DURATION));
         p5.push();
         p5.translate(u.x, u.y);
         const diff = u.clone().multiply(-1).add(v.clone());

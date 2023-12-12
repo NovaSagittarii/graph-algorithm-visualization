@@ -235,7 +235,7 @@ class Graph {
     );
 
     // Generate edges based on nearby neighbors
-    const maximumNeighbors = directed ? 2 : 4;
+    const maximumNeighbors = directed ? 3 : 4;
     nodes.forEach((u, i) => {
       const nearest = nodes
         .map((v, j) => [Vector2.dist(u, v), j])
