@@ -237,6 +237,17 @@ class Graph {
       }
     });
 
+    // when directed acyclic, add some more edges so its at least connected
+    if (directed && !allowCycles) {
+      for (let i = 0; i < n; ++i) {
+        for (let j = i+1; j < n; ++j) {
+          if (Math.random() < 1/n) {
+            adjacencyMatrix[i][j] = true;
+          }
+        }
+      }
+    }
+
     // only use unique edges
     for (let i = 0; i < n; ++i) {
       for (let j = 0; j < n; ++j) {
