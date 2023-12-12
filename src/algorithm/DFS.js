@@ -57,7 +57,13 @@ class DFS extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, [false], null);
-    const arrivaldeparture = graph.createTable(1, graphInput.n, [null, null], (x) => x[0] + ',' + x[1]);
+    const arrivaldeparture = graph.createTable({
+      name: "Arrival and Departure",
+      rows: 1,
+      cols: graphInput.n,
+      initialValue: [null, null],
+      stringMapping: (x) => x[0] + ',' + x[1],
+    });
     this.plane = 0;
     graph.finalize();
 

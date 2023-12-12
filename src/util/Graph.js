@@ -1,6 +1,9 @@
+import { object } from 'prop-types';
 import CodeTracker from './CodeTracker';
 import EventfulTable from './EventfulTable';
 import Vector2 from './Vector2';
+
+const stringMaps = { Infinity: '∞', null: '∅' };
 
 /**
  * Base class that both edges and vertices inherit from
@@ -203,9 +206,16 @@ class Graph {
    * @param {number} lo minimum weight
    * @param {number} hi maximum weight
    * @param {bool} directed whether graph should be directed or not
+   * @param {bool} allowCycles whether graph can have cycles
    * @return {GraphInput}
    */
-  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1, directed = false) {
+  static generateRoughlyPlanarGraph(
+    n,
+    lo = 1,
+    hi = 1,
+    directed = false,
+    allowCycles = true,
+  ) {
     const nodes = [...new Array(n)].map(() =>
       Vector2.random().multiply(100).add({ x: 150, y: 150 }),
     );
@@ -236,10 +246,22 @@ class Graph {
       }
     });
 
+    // when directed acyclic, add some more edges so its at least connected
+    if (directed && !allowCycles) {
+      for (let i = 0; i < n; ++i) {
+        for (let j = i + 1; j < n; ++j) {
+          if (Math.random() < 1 / n) {
+            adjacencyMatrix[i][j] = true;
+          }
+        }
+      }
+    }
+
     // only use unique edges
     for (let i = 0; i < n; ++i) {
       for (let j = 0; j < n; ++j) {
         if (adjacencyMatrix[i][j]) {
+          if (!allowCycles && i > j) continue;
           const weight = Math.ceil(Math.random() * (hi - lo) + lo);
           edges.push([i, j, weight]);
           if (!directed) {
@@ -301,9 +323,9 @@ class Graph {
     this.events = [];
 
     /**
-     * a list of table properties for initializing tables with [rows, columns, initialValue, cellToString] tuples
+     * a list of table properties for initializing tables with [rows, columns, initialValue, cellstringMapping] tuples
      * @template C
-     * @type {Array.<[number, number, C, * => string]>}
+     * @type {Array.<TableConfiguration>}
      */
     this.tableInitialization = [];
 
@@ -338,7 +360,13 @@ class Graph {
       const edge = new Edge(u, v, directed, c, initialEdgeAuxiliaryValue);
       this.edges[u].push(edge);
       if (!directed) {
-        const reversedEdge = new Edge(v, u, directed, c, initialEdgeAuxiliaryValue);
+        const reversedEdge = new Edge(
+          v,
+          u,
+          directed,
+          c,
+          initialEdgeAuxiliaryValue,
+        );
         this.edges[v].push(reversedEdge);
       }
     }
@@ -380,27 +408,27 @@ class Graph {
       }
     }
   }
-
   /**
    * (pre-finalization) creates a table (to track something in memory)
    * @template [T=number]
-   * @param {number} rows
-   * @param {number} columns
-   * @param {T} initialValue
-   * @param {null | (T => string)} cellToString
+   * @param {import('./EventfulTable').TableConfiguration} tableConfiguration
    * @return {EventfulTable<T>}
    */
-  createTable(rows, columns, initialValue = 0, cellToString = null) {
+  createTable(tableConfiguration) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
+    }
+    // check if stringMapping was provided
+    if (!tableConfiguration.stringMapping) {
+      tableConfiguration.stringMapping = (x) => stringMaps[x] || x.toString();
     }
     /**
      * table ID (used to reference itself in the events list)
      */
     const id = this.tableInitialization.length;
-    this.tableInitialization.push([rows, columns, initialValue, cellToString]);
+    this.tableInitialization.push(tableConfiguration);
 
-    const table = new EventfulTable(rows, columns, initialValue, cellToString);
+    const table = new EventfulTable(tableConfiguration);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
