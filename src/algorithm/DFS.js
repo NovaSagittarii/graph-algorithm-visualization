@@ -17,19 +17,19 @@ class DFS extends BaseAlgorithm {
     if (arrivaldeparture.get(0, from)[1] !== null) {
       if (arrivaldeparture.get(0, from)[1] < this.plane) { // Forward edge
         const edge = graph.getEdge(parent, from);
-        edge.setColor(2);
+        edge.setColor(3);
         return;
       }
       else { // Cross edge
         const edge = graph.getEdge(parent, from);
-        edge.setColor(3);
+        edge.setColor(4);
         return;
       }
     }
     if (arrivaldeparture.get(0, from)[0] !== null) {
       if (arrivaldeparture.get(0, from)[0] < this.plane) { // Back edge
         const edge = graph.getEdge(parent, from);
-        edge.setColor(3);
+        edge.setColor(1);
         return;
       }
     }
@@ -37,7 +37,7 @@ class DFS extends BaseAlgorithm {
     u.addHighlight(2);
     if (parent !== null) {
       const edge = graph.getEdge(parent, from);
-      edge.setColor(1);
+      edge.setColor(2);
     }
 
     // console.log(this.plane);
