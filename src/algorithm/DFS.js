@@ -33,7 +33,7 @@ class DFS extends BaseAlgorithm {
       edge.setColor(1);
     }
 
-    console.log(this.plane);
+    // console.log(this.plane);
     arrivaldeparture.set(0, from, [this.plane, null]);
     this.plane += 1;
 
@@ -62,7 +62,7 @@ class DFS extends BaseAlgorithm {
       rows: 1,
       cols: graphInput.n,
       initialValue: [null, null],
-      stringMapping: (x) => x[0] + ',' + x[1],
+      stringMapping: (cell) => cell.map(x => x === null ? "-" : x).join('/'),
     });
     this.plane = 0;
     graph.finalize();
