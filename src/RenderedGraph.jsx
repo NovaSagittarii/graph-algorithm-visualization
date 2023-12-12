@@ -180,6 +180,8 @@ export default function RenderedGraph({ graph }) {
           255 * ((color >> 2) % 2),
           100 + 155 * Math.max(0, (FADE_DURATION + lastRead - Date.now()) / FADE_DURATION),
         );
+        // prettier-ignore
+        p5.strokeWeight(1 + 1 * Math.max(0, (2*FADE_DURATION + lastRead - Date.now()) / FADE_DURATION));
         p5.push();
         p5.translate(u.x, u.y);
         const diff = u.clone().multiply(-1).add(v.clone());
