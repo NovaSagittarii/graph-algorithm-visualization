@@ -33,7 +33,7 @@ function App() {
     {
       label: 'Randomize',
       callback: () => {
-        setEdgeWeightRange([1, 1]);
+        setEdgeWeightRange([1, 10]);
       },
     },
     {
