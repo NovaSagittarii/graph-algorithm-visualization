@@ -1,5 +1,8 @@
+import { object } from 'prop-types';
 import EventfulTable from './EventfulTable';
 import Vector2 from './Vector2';
+
+const stringMaps = { Infinity: '∞', null: '∅' };
 
 /**
  * Base class that both edges and vertices inherit from
@@ -291,7 +294,7 @@ class Graph {
     this.events = [];
 
     /**
-     * a list of table properties for initializing tables with [rows, columns, initialValue, cellToString] tuples
+     * a list of table properties for initializing tables with [rows, columns, initialValue, cellstringMapping] tuples
      * @template C
      * @type {Array.<[number, number, C, * => string]>}
      */
@@ -372,24 +375,25 @@ class Graph {
   /**
    * (pre-finalization) creates a table (to track something in memory)
    * @template [T=number]
-   * @param {string} name
-   * @param {number} rows
-   * @param {number} columns
-   * @param {T} initialValue
-   * @param {null | (T => string)} cellToString
+   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowlabels:string[], collabels:string[], stringMapping:T=>string}} TableField<T>
+   * @param {TableField<T>} tableField
    * @return {EventfulTable<T>}
    */
-  createTable(name, rows, columns, initialValue = 0, cellToString = null) {
+  createTable(tablefield) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
+    }
+    // check if stringMapping was provided
+    if (!tablefield.stringMapping) {
+      tablefield.stringMapping = (x) => stringMaps[x] || x.toString();
     }
     /**
      * table ID (used to reference itself in the events list)
      */
     const id = this.tableInitialization.length;
-    this.tableInitialization.push([name, rows, columns, initialValue, cellToString]);
+    this.tableInitialization.push(tablefield);
 
-    const table = new EventfulTable(name, rows, columns, initialValue, cellToString);
+    const table = new EventfulTable(tablefield);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
