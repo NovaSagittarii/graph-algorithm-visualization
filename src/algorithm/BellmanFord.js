@@ -61,7 +61,11 @@ class BellmanFord extends BaseAlgorithm {
         const to = parent.get(v, iteration);
         if (to === null) break;
         const edge = graph.getEdge(to, v);
-        if (incycle) edge.setColor(1);
+        if (incycle) {
+          edge.setColor(1);
+          const vertex = graph.getVertex(v);
+          vertex.addHighlight(1);
+        }
         v = to;
         if (v === from && incycle) {
           break;
