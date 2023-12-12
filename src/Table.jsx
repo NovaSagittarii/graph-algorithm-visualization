@@ -32,8 +32,8 @@ export default function Table({ table }) {
             <div key={i} className='flex flex-row m-1'>
               <p
                 className={
-                  'w-8 text-center text-slate-900 self-center' +
-                  (i === table.lastRow ? ' border-4 border-green-100' : '')
+                  'text-xs rounded-md m-1 w-8 h-8 flex items-center justify-center transition-all text-slate-900' +
+                  (i === table.lastRow ? table.rowlabels ? table.rowlabels[i] ? ' border-4 border-green-100' : '' : '' : '')
                 }
               >
                 {table.rowlabels ? table.rowlabels[i] ?? '' : ''}
@@ -48,7 +48,7 @@ export default function Table({ table }) {
                       ' ' +
                       (table.rowlabels ? table.rowlabels[i] ?? '' : '')
                       : '') +
-                    ', ' +
+                    (table.rowheader ? table.colheader ? ', ' : '' : '') +
                     (table.colheader
                       ? table.colheader +
                       ' ' +
@@ -79,12 +79,12 @@ export default function Table({ table }) {
             </div>
           ))}
           <div className='flex flex-row m-1'>
-            <h1 className='w-8 text-center text-slate-900'> </h1>
+            <h1 className='text-xs rounded-md m-1 w-8 h-8 flex items-center justify-center transition-all text-slate-900'> </h1>
             {table.collabels?.map((label, i) => (
               <p
                 key={i}
                 className={
-                  'm-1 w-8 h-8 flex items-center justify-center text-center self-center text-slate-900' +
+                  'text-xs rounded-md m-1 w-8 h-8 flex items-center justify-center transition-all text-slate-900' +
                   (i === table.lastColumn ? ' border-4 border-blue-100' : '')
                 }
               >
