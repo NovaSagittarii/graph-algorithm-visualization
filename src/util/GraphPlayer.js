@@ -1,3 +1,4 @@
+import CodeTracker from './CodeTracker';
 import EventfulTable from './EventfulTable';
 import Graph, { Edge, Vertex } from './Graph';
 
@@ -50,9 +51,10 @@ class GraphPlayer {
     this.events = graph.events.slice(0);
     Object.freeze(this.events);
 
-    this.tables = graph.tableDimensions.map(
-      ([n, m]) => new EventfulTable(n, m),
+    this.tables = graph.tableInitialization.map(
+      ([n, m, c, mapping]) => new EventfulTable(n, m, c, mapping),
     );
+    this.code = new CodeTracker(graph.code);
     this.vertices = graph.vertices.map(
       (vertex) =>
         new VertexLR(
@@ -67,7 +69,7 @@ class GraphPlayer {
     this.lastReadTable = -1;
     this.lastReadTableRow = -1;
     this.lastReadTableColumn = -1;
-    
+
     /**
      * Whether the graph is directed or not
      */
@@ -163,6 +165,10 @@ class GraphPlayer {
             break;
           }
           case 'tableRead':
+            break;
+          case 'Code Write':
+            this.code.setLine(data.currentLine);
+            break;
           case 'tableWrite': {
             const { id, row, column } = data;
             this.lastReadTable = id;

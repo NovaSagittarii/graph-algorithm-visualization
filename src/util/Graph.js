@@ -1,3 +1,4 @@
+import CodeTracker from './CodeTracker';
 import EventfulTable from './EventfulTable';
 import Vector2 from './Vector2';
 
@@ -176,7 +177,7 @@ class Edge extends ColoredElement {
     this.from = from;
     this.to = to;
     this.directed = directed;
-    this.weight = 1;
+    this.weight = weight;
   }
 }
 
@@ -195,12 +196,16 @@ class Edge extends ColoredElement {
  */
 class Graph {
   /**
-   * generates a roughly planar (it'll look decent when rendered) graph with n vertices
+   * Generates a roughly planar (it'll look decent when rendered) graph with n vertices.
+   *
+   * Weights will be set to [lo, hi] uniformly random.
    * @param {number} n how many vertices
-   * @param {number} c maximum weight (weights will be set to [1, c] uniformly random)
+   * @param {number} lo minimum weight
+   * @param {number} hi maximum weight
+   * @param {bool} directed whether graph should be directed or not
    * @return {GraphInput}
    */
-  static generateRoughlyPlanarGraph(n, c = 1) {
+  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1, directed = false) {
     const nodes = [...new Array(n)].map(() =>
       Vector2.random().multiply(100).add({ x: 150, y: 150 }),
     );
@@ -215,16 +220,19 @@ class Graph {
     );
 
     // Generate edges based on nearby neighbors
+    const maximumNeighbors = directed ? 2 : 4;
     nodes.forEach((u, i) => {
       const nearest = nodes
         .map((v, j) => [Vector2.dist(u, v), j])
         .filter(([_d, idx]) => idx !== i)
         .sort((a, b) => a[0] - b[0])
-        .slice(0, 4); // take at most 4
+        .slice(0, maximumNeighbors); // take at most `maximumNeighbors`
       for (const [d, j] of nearest) {
         if (d > nearest[0][0] * 2) continue;
         adjacencyMatrix[i][j] = true;
-        adjacencyMatrix[j][i] = true;
+        if (!directed) {
+          adjacencyMatrix[j][i] = true;
+        }
       }
     });
 
@@ -232,7 +240,12 @@ class Graph {
     for (let i = 0; i < n; ++i) {
       for (let j = 0; j < n; ++j) {
         if (adjacencyMatrix[i][j]) {
-          edges.push([i, j, Math.ceil(Math.random() * c)]);
+          const weight = Math.ceil(Math.random() * (hi - lo) + lo);
+          edges.push([i, j, weight]);
+          if (!directed) {
+            adjacencyMatrix[j][i] = false;
+            edges.push([j, i, weight]);
+          }
         }
       }
     }
@@ -255,7 +268,7 @@ class Graph {
       n: n,
       nodePositions: nodes,
       edges: edges,
-      directed: false,
+      directed: directed,
     };
   }
 
@@ -288,10 +301,13 @@ class Graph {
     this.events = [];
 
     /**
-     * a list of table dimensions that are associated with the animation [rows, columns] pairs
-     * @type {Array.<[number, number]>}
+     * a list of table properties for initializing tables with [rows, columns, initialValue, cellToString] tuples
+     * @template C
+     * @type {Array.<[number, number, C, * => string]>}
      */
-    this.tableDimensions = [];
+    this.tableInitialization = [];
+
+    this.code = [];
 
     /**
      * whether parameter initialization has finished (creating tables)
@@ -300,6 +316,8 @@ class Graph {
     this.finalized = false;
 
     const { n, nodePositions, edges, directed } = graphInput;
+
+    this.directed = directed;
 
     /**
      * vertex list
@@ -317,14 +335,12 @@ class Graph {
      */
     this.edges = [...new Array(n)].map(() => []);
     for (const [u, v, c] of edges) {
-      this.edges[u].push(
-        new Edge(u, v, directed, c, initialEdgeAuxiliaryValue),
-      );
-      // if (!directed) {
-      //   this.edges[v].push(
-      //     new Edge(v, u, directed, c, initialEdgeAuxiliaryValue),
-      //   );
-      // }
+      const edge = new Edge(u, v, directed, c, initialEdgeAuxiliaryValue);
+      this.edges[u].push(edge);
+      if (!directed) {
+        const reversedEdge = new Edge(v, u, directed, c, initialEdgeAuxiliaryValue);
+        this.edges[v].push(reversedEdge);
+      }
     }
 
     // Initialize listeners
@@ -371,19 +387,20 @@ class Graph {
    * @param {number} rows
    * @param {number} columns
    * @param {T} initialValue
+   * @param {null | (T => string)} cellToString
    * @return {EventfulTable<T>}
    */
-  createTable(rows, columns, initialValue = 0) {
+  createTable(rows, columns, initialValue = 0, cellToString = null) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
     }
     /**
      * table ID (used to reference itself in the events list)
      */
-    const id = this.tableDimensions.length;
-    this.tableDimensions.push([rows, columns]);
+    const id = this.tableInitialization.length;
+    this.tableInitialization.push([rows, columns, initialValue, cellToString]);
 
-    const table = new EventfulTable(rows, columns, initialValue);
+    const table = new EventfulTable(rows, columns, initialValue, cellToString);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
@@ -406,6 +423,26 @@ class Graph {
       });
     });
     return table;
+  }
+
+  /**
+   * (pre-finalization) add code
+   * @template [T=number]
+   * @param {T} codeList
+   * @return {CodeTracker<T>}
+   */
+  addCode(codeList) {
+    this.code = codeList;
+    const code = new CodeTracker(codeList);
+    code.addEventListener('write', () => {
+      this.events.push({
+        type: 'Code Write',
+        data: {
+          currentLine: code.currentLine,
+        },
+      });
+    });
+    return code;
   }
 
   /**

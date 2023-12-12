@@ -10,18 +10,21 @@ import Dijkstra from './algorithm/Dijkstra';
 import FloydWarshall from './algorithm/FloydWarshall';
 import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
-import TarjanSSC from './algorithm/TarjanSSC';
+import TarjanSCC from './algorithm/TarjanSCC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
 import Topo from './algorithm/Topo'
 
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
   const [tps, setTps] = useState(10);
+  const [edgeWeightRange, setEdgeWeightRange] = useState([1, 1]);
+  const [directedGraph, setDirectedGraph] = useState(true);
   const [graphInput, setGraphInput] = useState(
     Graph.generateRoughlyPlanarGraph(vertexCount),
   );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
+
   /**
    * @type {Array.<{label:string, callback:()=>{}}>}
    */
@@ -29,7 +32,13 @@ function App() {
     {
       label: 'Randomize',
       callback: () => {
-        setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
+        setEdgeWeightRange([1, 1]);
+      },
+    },
+    {
+      label: 'Negative Randomize',
+      callback: () => {
+        setEdgeWeightRange([-1, 9]);
       },
     },
     {
@@ -81,9 +90,9 @@ function App() {
       },
     },
     {
-      label: 'Tarjan SSC',
+      label: 'Tarjan SCC',
       callback: () => {
-        setAlg(new TarjanSSC());
+        setAlg(new TarjanSCC());
       },
     },
     {
@@ -95,8 +104,8 @@ function App() {
   ];
 
   useEffect(() => {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount));
-  }, [vertexCount]);
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1], directedGraph));
+  }, [vertexCount, edgeWeightRange, directedGraph]);
   useEffect(() => {
     if (graphInput) {
       const processedGraph = alg.run(graphInput);
@@ -109,7 +118,7 @@ function App() {
       if (graph) {
         graph.step(Date.now());
       }
-    }, 1000/tps);
+    }, 1000 / tps);
     return () => {
       clearInterval(interval);
     };
@@ -124,14 +133,35 @@ function App() {
       ))}
       <div>
         <div>
+          <label> directed? </label>
+          <input type='checkbox' name='directedness' defaultChecked={directedGraph} onChange={({ target}) => setDirectedGraph(target.checked)}/>
+        </div>
+        <div>
           <label> vertex count: {vertexCount} </label>
-          <input type='range' name='vertex-n' min={5} max={30} step={5} defaultValue={vertexCount} onMouseUp={({target}) => setVertexCount(+target.value)}/>
+          <input
+            type='range'
+            name='vertex-n'
+            min={5}
+            max={30}
+            step={5}
+            defaultValue={vertexCount}
+            onMouseUp={({ target }) => setVertexCount(+target.value)}
+          />
         </div>
         <div>
           <label> tick / second: {tps} </label>
-          {[1, 2, 5, 10, 20, 50, 100].map((x,index) => (<button key={index} onClick={() => setTps(x)} className={'bg-slate-100 hover:border transition-all ' + (x===tps ? 'border-red-500' : '')}>
-            {x}
-          </button>))}
+          {[1, 2, 5, 10, 20, 50, 100].map((x, index) => (
+            <button
+              key={index}
+              onClick={() => setTps(x)}
+              className={
+                'bg-slate-100 hover:border transition-all ' +
+                (x === tps ? 'border-red-500' : '')
+              }
+            >
+              {x}
+            </button>
+          ))}
         </div>
       </div>
       <RenderedGraph graph={graph} />
