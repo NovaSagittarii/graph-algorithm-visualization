@@ -62,6 +62,19 @@ export default function RenderedGraph({ graph }) {
       const { vertices, edges } = graph;
       p5.noFill();
 
+      // --- center the graph
+      let meanX = 0;
+      let meanY = 0;
+      for (const {position} of graph.vertices) {
+        const { x, y } = position;
+        meanX += x;
+        meanY += y;
+      }
+      p5.translate(p5.width / 2, p5.height / 2);
+      p5.translate(-meanX / graph.vertices.length, -meanY / graph.vertices.length);
+      const topLeftX = meanX / graph.vertices.length - p5.width / 2;
+      const topLeftY = meanY / graph.vertices.length - p5.height / 2;
+
       // --- Drawing vertex highlight background
       p5.push();
       // for (let i = 0; i < vertices.length; ++i) {
@@ -94,7 +107,7 @@ export default function RenderedGraph({ graph }) {
       // }
       // Use Voronoi on the highlight colors to draw the background, do not draw voronoi edge, color should be the same color as the highlight of the vertext it contains
       const voronoi = new Voronoi();
-      const bbox = { xl: 0, xr: p5.width, yt: 0, yb: p5.height };
+      const bbox = { xl: topLeftX, xr: topLeftX+p5.width, yt: topLeftY, yb: topLeftY+p5.height };
       const sites = [];
       for (const vertex of vertices) {
         if (vertex.highlights.size === 0) {
@@ -252,11 +265,13 @@ export default function RenderedGraph({ graph }) {
       }
 
       // Make nodes draggable
+      const translatedMouseX = p5.mouseX + topLeftX;
+      const translatedMouseY = p5.mouseY + topLeftY;
       if (p5.mousePressed) {
         if (dragged === null) {
           for (let i = 0; i < vertices.length; ++i) {
             const { position } = vertices[i];
-            const { x, y } = p5.createVector(p5.mouseX, p5.mouseY);
+            const { x, y } = p5.createVector(translatedMouseX, translatedMouseY);
             if (x > position.x - 15 && x < position.x + 15 && y > position.y - 15 && y < position.y + 15) {
               dragged = i;
             }
@@ -265,8 +280,8 @@ export default function RenderedGraph({ graph }) {
       }
       if (p5.mouseIsPressed && dragged !== null) {
         const { position } = vertices[dragged];
-        position.x = p5.mouseX;
-        position.y = p5.mouseY;
+        position.x = translatedMouseX;
+        position.y = translatedMouseY;
       } else {
         dragged = null;
       }
