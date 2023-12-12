@@ -1,34 +1,35 @@
 /**
  * @template T
  * Table with event listeners for "read" (when get is called) and "write" (when set is called)
- *
+ * 
  * TODO: any idea to set type annotations for eventListeners?
  */
 class EventfulTable extends EventTarget {
   /**
-   * @param {string} name
-   * @param {number} rows 
-   * @param {number} columns 
-   * @param {T} initialValue 
-   * @param {T => string} toString mapping function for display
+   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowheader:string, rowlabels:string[], colheader:string, collabels:string[], stringMapping:T=>string}} TableField<T>
+   * @param {TableField<T>} tablefield
    */
-  constructor(name, rows, columns, initialValue = 0, toString = x => (x + "")) {
+  constructor(tablefield) {
     super();
     /**
      * @type {Array.<Array.<T>>}
      */
-    this.matrix = [...new Array(rows)].map(() =>
-      [...new Array(columns)].map(() => initialValue),
+    this.matrix = [...new Array(tablefield.rows)].map(() =>
+      [...new Array(tablefield.cols)].map(() => tablefield.initialValue),
     );
 
     // surely this doesn't lead to race condition?
     this.lastRow = -1;
     this.lastColumn = -1;
     this.lastWrite = -1;
-    this.name = name;
+    this.name = tablefield.name;
+    this.rowlabels = tablefield.rowlabels;
+    this.collabels = tablefield.collabels;
+    this.rowheader = tablefield.rowheader;
+    this.colheader = tablefield.colheader;
 
     /** @type {T => string} */
-    this.cellToString = toString;
+    this.cellstringMapping = tablefield.stringMapping;
   }
 
   /**

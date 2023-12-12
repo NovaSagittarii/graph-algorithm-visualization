@@ -27,9 +27,9 @@ class Dijkstra extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, [false], null);
+    const distance = graph.createTable({ name: "Distance", rows: 1, cols: graphInput.n, initialValue: Infinity });
+    const parent = graph.createTable({ name: "Parent", rows: 1, cols: graphInput.n, initialValue: null });
     const code = graph.addCode(codeList);
-    const distance = graph.createTable("Table", 1, graphInput.n, Infinity);
-    const parent = graph.createTable("Table", 1, graphInput.n, null);
     graph.finalize();
 
     // --- process graph

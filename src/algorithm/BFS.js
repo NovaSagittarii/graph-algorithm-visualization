@@ -6,7 +6,7 @@ class BFS extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, [false], null);
-    const visits = graph.createTable("Table", 1, graphInput.n, 0);
+    const visits = graph.createTable({ name: "Visits", rows: 1, cols: graphInput.n, initialValue: 0 });
     graph.finalize();
 
     // --- process graph
