@@ -28,8 +28,16 @@ export default function RenderedGraph({ graph }) {
       p5.textAlign(p5.CENTER, p5.CENTER);
     };
 
+    /**
+     * was mouse pressed this frame
+     */
+    let mousePressed = false;
+    /**
+     * should repulsion force be enabled
+     */
+    let forceEnabled = true;
     p5.mousePressed = () => {
-      // graph.step(Date.now());
+      mousePressed = true;
     };
 
     p5.draw = () => {
@@ -40,9 +48,35 @@ export default function RenderedGraph({ graph }) {
       // p5.text(`${p5.mouseX}, ${p5.mouseY}`, 100, 100);
       p5.text(p5.frameRate().toFixed(1), 100, 25);
       p5.text(`${graph.pc} of ${graph.events.length}`, 100, 50);
+      p5.noFill(0);
+      if (p5.dist(p5.mouseX, p5.mouseY, 50, 150) < 30) {
+        p5.fill(0, 50);
+        if (mousePressed) {
+          forceEnabled = !forceEnabled;
+        }
+      }
+      p5.ellipse(50, 150, 60);
+      p5.fill(0);
+      p5.text(forceEnabled ? 'Force ON' : 'Force OFF', 50, 150);
 
       const { vertices, edges } = graph;
       p5.noFill();
+
+      // --- center the graph
+      let meanX = 0;
+      let meanY = 0;
+      for (const { position } of graph.vertices) {
+        const { x, y } = position;
+        meanX += x;
+        meanY += y;
+      }
+      p5.translate(p5.width / 2, p5.height / 2);
+      p5.translate(
+        -meanX / graph.vertices.length,
+        -meanY / graph.vertices.length,
+      );
+      const topLeftX = meanX / graph.vertices.length - p5.width / 2;
+      const topLeftY = meanY / graph.vertices.length - p5.height / 2;
 
       // --- Drawing vertex highlight background
       p5.push();
@@ -76,7 +110,12 @@ export default function RenderedGraph({ graph }) {
       // }
       // Use Voronoi on the highlight colors to draw the background, do not draw voronoi edge, color should be the same color as the highlight of the vertext it contains
       const voronoi = new Voronoi();
-      const bbox = { xl: 0, xr: p5.width, yt: 0, yb: p5.height };
+      const bbox = {
+        xl: topLeftX,
+        xr: topLeftX + p5.width,
+        yt: topLeftY,
+        yb: topLeftY + p5.height,
+      };
       const sites = [];
       for (const vertex of vertices) {
         if (vertex.highlights.size === 0) {
@@ -102,7 +141,10 @@ export default function RenderedGraph({ graph }) {
         for (const halfedge of cell.halfedges) {
           const { x: xstart, y: ystart } = halfedge.getStartpoint();
           const { x: xend, y: yend } = halfedge.getEndpoint();
-          const key = `${Math.min(xstart, xend)} ${Math.min(ystart, yend)} ${Math.max(xstart, xend)} ${Math.max(ystart, yend)}`;
+          const key = `${Math.min(xstart, xend)} ${Math.min(
+            ystart,
+            yend,
+          )} ${Math.max(xstart, xend)} ${Math.max(ystart, yend)}`;
           if (sharedEdges.has(key)) {
             sharedEdges.get(key).push(cell);
           } else {
@@ -122,10 +164,14 @@ export default function RenderedGraph({ graph }) {
         p5.beginShape();
         // draw shape with rounded corners by stopping each edge a bit early and using curveVertex() to connect them
         for (let i = 0; i < cell.halfedges.length; i++) {
-          let { x: xstart, y: ystart } = cell.halfedges[i % cell.halfedges.length].getStartpoint();
-          let { x: xend, y: yend } = cell.halfedges[i % cell.halfedges.length].getEndpoint();
-          let { x: xnextstart, y: ynextstart } = cell.halfedges[(i + 1) % cell.halfedges.length].getStartpoint();
-          let { x: xnextend, y: ynextend } = cell.halfedges[(i + 1) % cell.halfedges.length].getEndpoint();
+          let { x: xstart, y: ystart } =
+            cell.halfedges[i % cell.halfedges.length].getStartpoint();
+          let { x: xend, y: yend } =
+            cell.halfedges[i % cell.halfedges.length].getEndpoint();
+          let { x: xnextstart, y: ynextstart } =
+            cell.halfedges[(i + 1) % cell.halfedges.length].getStartpoint();
+          let { x: xnextend, y: ynextend } =
+            cell.halfedges[(i + 1) % cell.halfedges.length].getEndpoint();
 
           // stop a bit early to curve the corner
           let xsub = (xend - xstart) * 0.2;
@@ -172,7 +218,7 @@ export default function RenderedGraph({ graph }) {
         const { from, to, lastRead, color, weight } = edge;
         const u = vertices[from].position;
         const v = vertices[to].position;
-        if (!graph.directed && from < to) continue; // draw only one of them when UNDIRECTED
+        if (!graph.directed && from > to) continue; // draw only one of them when UNDIRECTED
         // prettier-ignore
         p5.stroke(
           255 * (color % 2),
@@ -188,11 +234,17 @@ export default function RenderedGraph({ graph }) {
         p5.rotate(diff.angle());
         const RADIUS_OFFSET = 8;
         if (graph.directed) {
-          const biconnected = graph.edgeMatrix[from][to] && graph.edgeMatrix[to][from];
-          const minorAxisOffset = biconnected ? 3 : 0
-          p5.line(RADIUS_OFFSET, minorAxisOffset, diff.magnitude() - RADIUS_OFFSET, minorAxisOffset);
+          const biconnected =
+            graph.edgeMatrix[from][to] && graph.edgeMatrix[to][from];
+          const minorAxisOffset = biconnected ? 3 : 0;
+          p5.line(
+            RADIUS_OFFSET,
+            minorAxisOffset,
+            diff.magnitude() - RADIUS_OFFSET,
+            minorAxisOffset,
+          );
           p5.push();
-          p5.translate(diff.magnitude()/2, 5);
+          p5.translate(diff.magnitude() / 2, 5);
           p5.rotate(-diff.angle());
           p5.noStroke();
           p5.fill(0);
@@ -217,27 +269,41 @@ export default function RenderedGraph({ graph }) {
       }
       p5.noStroke();
 
-      const impulse = vertices.map(() => new Vector2(0, 0));
-      for (let u = 0; u < vertices.length; ++u) {
-        for (let v = 0; v < vertices.length; ++v) {
-          if (u === v) continue;
-          const connected = graph.edgeMatrix[u][v] !== null;
-          // prettier-ignore
-          vertices[u].position.repulse(vertices[v].position, 150, 1, impulse[u]);
-          // prettier-ignore
-          if (connected) {
-            vertices[u].position.repulse(vertices[v].position, 20, 3, impulse[u]);
+      // --- vertex repulsion
+      if (forceEnabled) {
+        const impulse = vertices.map(() => new Vector2(0, 0));
+        for (let u = 0; u < vertices.length; ++u) {
+          for (let v = 0; v < vertices.length; ++v) {
+            if (u === v) continue;
+            const connected = graph.edgeMatrix[u][v] !== null;
+            // prettier-ignore
+            vertices[u].position.repulse(vertices[v].position, 150, 1, impulse[u]);
+            // prettier-ignore
+            if (connected) {
+              vertices[u].position.repulse(vertices[v].position, 20, 3, impulse[u]);
+            }
           }
         }
+        vertices.forEach((v, i) => v.position.add(impulse[i].multiply(0.5)));
       }
 
       // Make nodes draggable
+      const translatedMouseX = p5.mouseX + topLeftX;
+      const translatedMouseY = p5.mouseY + topLeftY;
       if (p5.mousePressed) {
         if (dragged === null) {
           for (let i = 0; i < vertices.length; ++i) {
             const { position } = vertices[i];
-            const { x, y } = p5.createVector(p5.mouseX, p5.mouseY);
-            if (x > position.x - 15 && x < position.x + 15 && y > position.y - 15 && y < position.y + 15) {
+            const { x, y } = p5.createVector(
+              translatedMouseX,
+              translatedMouseY,
+            );
+            if (
+              x > position.x - 15 &&
+              x < position.x + 15 &&
+              y > position.y - 15 &&
+              y < position.y + 15
+            ) {
               dragged = i;
             }
           }
@@ -245,16 +311,14 @@ export default function RenderedGraph({ graph }) {
       }
       if (p5.mouseIsPressed && dragged !== null) {
         const { position } = vertices[dragged];
-        position.x = p5.mouseX;
-        position.y = p5.mouseY;
+        position.x = translatedMouseX;
+        position.y = translatedMouseY;
       } else {
         dragged = null;
       }
 
-
-      vertices.forEach((v, i) => v.position.add(impulse[i].multiply(0.5)));
-
       p5.pop();
+      mousePressed = false;
     };
   }
   return (
