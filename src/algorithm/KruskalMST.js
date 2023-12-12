@@ -39,7 +39,12 @@ class KruskalMST extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, null, null);
-    const sortedEdgesTable = graph.createTable(1, graphInput.edges.length);
+    const sortedEdgesTable = graph.createTable({
+      name: "Sorted Edges Table",
+      rows: 1,
+      cols: graphInput.edges.length,
+      initialValue: null,
+    });
     graph.finalize();
 
     // --- process edgelist

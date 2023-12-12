@@ -12,6 +12,7 @@ import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
 import TarjanSCC from './algorithm/TarjanSCC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
+import TopologicalSort from './algorithm/TopologicalSort'
 
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
@@ -93,6 +94,12 @@ function App() {
       label: 'Tarjan SCC',
       callback: () => {
         setAlg(new TarjanSCC());
+      },
+    },
+    {
+      label: 'Kahn\'s Topological Sort',
+      callback: () => {
+        setAlg(new TopologicalSort());
       },
     },
   ];
