@@ -6,9 +6,16 @@ class PrimMST extends BaseAlgorithm {
   run(graphInput) {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, null, null);
+    const lightEdge = graph.createTable({
+      name: 'Light Edge',
+      rows:1,
+      cols: 2,
+      initialValue: null,
+    });
     graph.finalize();
 
     // --- process graph
+
     return graph;
   }
 }
