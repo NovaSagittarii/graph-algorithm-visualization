@@ -17,6 +17,7 @@ function App() {
   const [vertexCount, setVertexCount] = useState(20);
   const [tps, setTps] = useState(10);
   const [edgeWeightRange, setEdgeWeightRange] = useState([1, 1]);
+  const [allowCycles, setAllowCycles] = useState(true);
   const [directedGraph, setDirectedGraph] = useState(true);
   const [graphInput, setGraphInput] = useState(
     Graph.generateRoughlyPlanarGraph(vertexCount),
@@ -97,8 +98,8 @@ function App() {
   ];
 
   useEffect(() => {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1], directedGraph));
-  }, [vertexCount, edgeWeightRange, directedGraph]);
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1], directedGraph, allowCycles));
+  }, [vertexCount, edgeWeightRange, directedGraph, allowCycles]);
   useEffect(() => {
     if (graphInput) {
       const processedGraph = alg.run(graphInput);
@@ -129,6 +130,12 @@ function App() {
           <label> directed? </label>
           <input type='checkbox' name='directedness' defaultChecked={directedGraph} onChange={({ target}) => setDirectedGraph(target.checked)}/>
         </div>
+        {
+          directedGraph && (<div>
+            <label> allow cycles? </label>
+            <input type='checkbox' name='cyclic' defaultChecked={allowCycles} onChange={({ target}) => setAllowCycles(target.checked)}/>
+            </div>)
+        }
         <div>
           <label> vertex count: {vertexCount} </label>
           <input

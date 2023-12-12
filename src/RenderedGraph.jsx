@@ -172,7 +172,7 @@ export default function RenderedGraph({ graph }) {
         const { from, to, lastRead, color, weight } = edge;
         const u = vertices[from].position;
         const v = vertices[to].position;
-        if (!graph.directed && from < to) continue; // draw only one of them when UNDIRECTED
+        if (!graph.directed && from > to) continue; // draw only one of them when UNDIRECTED
         // prettier-ignore
         p5.stroke(
           255 * (color % 2),

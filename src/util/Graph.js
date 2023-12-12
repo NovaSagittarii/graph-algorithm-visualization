@@ -203,9 +203,10 @@ class Graph {
    * @param {number} lo minimum weight
    * @param {number} hi maximum weight
    * @param {bool} directed whether graph should be directed or not
+   * @param {bool} allowCycles whether graph can have cycles
    * @return {GraphInput}
    */
-  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1, directed = false) {
+  static generateRoughlyPlanarGraph(n, lo = 1, hi = 1, directed = false, allowCycles = true) {
     const nodes = [...new Array(n)].map(() =>
       Vector2.random().multiply(100).add({ x: 150, y: 150 }),
     );
@@ -240,6 +241,7 @@ class Graph {
     for (let i = 0; i < n; ++i) {
       for (let j = 0; j < n; ++j) {
         if (adjacencyMatrix[i][j]) {
+          if (!allowCycles && i > j) continue;
           const weight = Math.ceil(Math.random() * (hi - lo) + lo);
           edges.push([i, j, weight]);
           if (!directed) {
