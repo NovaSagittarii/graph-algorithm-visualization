@@ -4,7 +4,7 @@ import BaseAlgorithm from './BaseAlgorithm';
 class ToplogicalSort extends BaseAlgorithm {
     topo(graph,result, table) {
         let n = graph.vertices.length;
-        let counter = 0;
+        let counter = 0; // index for result array
         const numbers = Array.from({ length: n  }, (_, index) => index);
         // precalculating all incoming edges count
         for(let i = 0; i < n; i++) {
@@ -18,13 +18,13 @@ class ToplogicalSort extends BaseAlgorithm {
 
         while(filteredTuples.length > 0) { // while there are verticies with 0 incoming edges
             for(const [v] of filteredTuples) {
-                result.set(0,counter, v);
-                counter++;
-                for(const { to } of graph.getNeighbors(v)) {
+                result.set(0,counter, v); // adding to our topo sort (greedy)
+                counter++; 
+                for(const { to } of graph.getNeighbors(v)) { // decrementing counts by incrementing
                     vals[to][1] -=1;
                     table.set(0,to, vals[to][1]);
                 }
-                vals[v][1] = -1;
+                vals[v][1] = -1; // to avoid recounting.
             }
             filteredTuples = vals.filter(tuple => tuple[1] === 0);
         }
