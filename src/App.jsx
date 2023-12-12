@@ -10,22 +10,19 @@ import Dijkstra from './algorithm/Dijkstra';
 import FloydWarshall from './algorithm/FloydWarshall';
 import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
-import TarjanSSC from './algorithm/TarjanSSC';
+import TarjanSCC from './algorithm/TarjanSCC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
 
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
   const [tps, setTps] = useState(10);
   const [edgeWeightRange, setEdgeWeightRange] = useState([1, 1]);
+  const [directedGraph, setDirectedGraph] = useState(true);
   const [graphInput, setGraphInput] = useState(
     Graph.generateRoughlyPlanarGraph(vertexCount),
   );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
-
-  function regenerateGraph() {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount), edgeLo, edgeHi);
-  }
 
   /**
    * @type {Array.<{label:string, callback:()=>{}}>}
@@ -40,7 +37,7 @@ function App() {
     {
       label: 'Negative Randomize',
       callback: () => {
-        setEdgeWeightRange([-10, 100]);
+        setEdgeWeightRange([-1, 9]);
       },
     },
     {
@@ -92,16 +89,16 @@ function App() {
       },
     },
     {
-      label: 'Tarjan SSC',
+      label: 'Tarjan SCC',
       callback: () => {
-        setAlg(new TarjanSSC());
+        setAlg(new TarjanSCC());
       },
     },
   ];
 
   useEffect(() => {
-    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1]));
-  }, [vertexCount, edgeWeightRange]);
+    setGraphInput(Graph.generateRoughlyPlanarGraph(vertexCount, edgeWeightRange[0], edgeWeightRange[1], directedGraph));
+  }, [vertexCount, edgeWeightRange, directedGraph]);
   useEffect(() => {
     if (graphInput) {
       const processedGraph = alg.run(graphInput);
@@ -128,6 +125,10 @@ function App() {
         </button>
       ))}
       <div>
+        <div>
+          <label> directed? </label>
+          <input type='checkbox' name='directedness' defaultChecked={directedGraph} onChange={({ target}) => setDirectedGraph(target.checked)}/>
+        </div>
         <div>
           <label> vertex count: {vertexCount} </label>
           <input
