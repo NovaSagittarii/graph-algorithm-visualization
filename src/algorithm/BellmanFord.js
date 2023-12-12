@@ -7,9 +7,31 @@ class BellmanFord extends BaseAlgorithm {
     // --- set up auxiliary values then finalize
     const graph = new Graph(graphInput, null, null);
     const lengthrowlabels = [...Array(graphInput.n).keys()].map((x) => `${x}`);
-    const lengthcollabels = [...Array(graphInput.n + 1).keys()].map((x) => `${x}`);
-    const length = graph.createTable({ name: "Path Length", rows: graphInput.n, cols: graphInput.n + 1, initialValue: Infinity, rowheader: "Node", colheader: "Iteration", rowlabels: lengthrowlabels, collabels: lengthcollabels, stringMapping: (x) => x === Infinity ? '∞' : x });
-    const parent = graph.createTable({ name: "Parent", rows: graphInput.n, cols: graphInput.n + 1, initialValue: null, rowheader: "Node", colheader: "Iteration", rowlabels: lengthrowlabels, collabels: lengthcollabels, stringMapping: (x) => x === null ? '∅' : x });
+    const lengthcollabels = [...Array(graphInput.n + 1).keys()].map(
+      (x) => `${x}`,
+    );
+    const length = graph.createTable({
+      name: 'Path Length',
+      rows: graphInput.n,
+      cols: graphInput.n + 1,
+      initialValue: Infinity,
+      rowheader: 'Node',
+      colheader: 'Iteration',
+      rowlabels: lengthrowlabels,
+      collabels: lengthcollabels,
+      stringMapping: (x) => (x === Infinity ? '∞' : x),
+    });
+    const parent = graph.createTable({
+      name: 'Parent',
+      rows: graphInput.n,
+      cols: graphInput.n + 1,
+      initialValue: null,
+      rowheader: 'Node',
+      colheader: 'Iteration',
+      rowlabels: lengthrowlabels,
+      collabels: lengthcollabels,
+      stringMapping: (x) => (x === null ? '∅' : x),
+    });
 
     graph.finalize();
 

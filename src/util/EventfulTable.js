@@ -1,7 +1,7 @@
 /**
  * @template T
  * Table with event listeners for "read" (when get is called) and "write" (when set is called)
- * 
+ *
  * TODO: any idea to set type annotations for eventListeners?
  */
 class EventfulTable extends EventTarget {
