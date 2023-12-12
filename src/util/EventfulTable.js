@@ -6,30 +6,30 @@
  */
 class EventfulTable extends EventTarget {
   /**
-   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowheader:string, rowlabels:string[], colheader:string, collabels:string[], stringMapping:T=>string}} TableField<T>
-   * @param {TableField<T>} tablefield
+   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowheader:string, rowlabels:string[], colheader:string, collabels:string[], stringMapping:T=>string}} TableConfig<T>
+   * @param {TableConfig<T>} tableConfig
    */
-  constructor(tablefield) {
+  constructor(tableConfig) {
     super();
     /**
      * @type {Array.<Array.<T>>}
      */
-    this.matrix = [...new Array(tablefield.rows)].map(() =>
-      [...new Array(tablefield.cols)].map(() => tablefield.initialValue),
+    this.matrix = [...new Array(tableConfig.rows)].map(() =>
+      [...new Array(tableConfig.cols)].map(() => tableConfig.initialValue),
     );
 
     // surely this doesn't lead to race condition?
     this.lastRow = -1;
     this.lastColumn = -1;
     this.lastWrite = -1;
-    this.name = tablefield.name;
-    this.rowlabels = tablefield.rowlabels;
-    this.collabels = tablefield.collabels;
-    this.rowheader = tablefield.rowheader;
-    this.colheader = tablefield.colheader;
+    this.name = tableConfig.name;
+    this.rowlabels = tableConfig.rowlabels;
+    this.collabels = tableConfig.collabels;
+    this.rowheader = tableConfig.rowheader;
+    this.colheader = tableConfig.colheader;
 
     /** @type {T => string} */
-    this.cellstringMapping = tablefield.stringMapping;
+    this.cellstringMapping = tableConfig.stringMapping;
   }
 
   /**

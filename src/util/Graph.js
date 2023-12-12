@@ -375,25 +375,25 @@ class Graph {
   /**
    * (pre-finalization) creates a table (to track something in memory)
    * @template [T=number]
-   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowlabels:string[], collabels:string[], stringMapping:T=>string}} TableField<T>
-   * @param {TableField<T>} tableField
+   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowlabels:string[], collabels:string[], stringMapping:T=>string}} TableConfig<T>
+   * @param {TableConfig<T>} tableConfig
    * @return {EventfulTable<T>}
    */
-  createTable(tablefield) {
+  createTable(tableConfig) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
     }
     // check if stringMapping was provided
-    if (!tablefield.stringMapping) {
-      tablefield.stringMapping = (x) => stringMaps[x] || x.toString();
+    if (!tableConfig.stringMapping) {
+      tableConfig.stringMapping = (x) => stringMaps[x] || x.toString();
     }
     /**
      * table ID (used to reference itself in the events list)
      */
     const id = this.tableInitialization.length;
-    this.tableInitialization.push(tablefield);
+    this.tableInitialization.push(tableConfig);
 
-    const table = new EventfulTable(tablefield);
+    const table = new EventfulTable(tableConfig);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
