@@ -56,7 +56,7 @@ export default function Table({ table }) {
                       : '')
                   }
                   className={
-                    'rounded-md m-1 w-8 h-8 flex items-center justify-center transition-all ' +
+                    'text-xs rounded-md m-1 w-8 h-8 flex items-center justify-center transition-all ' +
                     (i === table.lastRow && j === table.lastColumn
                       ? 'border-2 border-red-500 bg-red-500 '
                       : '') +
