@@ -12,9 +12,11 @@ import KMST from './algorithm/KruskalMST';
 import PMST from './algorithm/PrimMST';
 import TarjanSCC from './algorithm/TarjanSCC';
 import ReachabilityQuery from './algorithm/ReachabilityQuery';
+import Editor from './editor/Editor';
 
 function App() {
   const [vertexCount, setVertexCount] = useState(20);
+  const [edit, setEdit] = useState(false);
   const [tps, setTps] = useState(10);
   const [edgeWeightRange, setEdgeWeightRange] = useState([1, 1]);
   const [allowCycles, setAllowCycles] = useState(true);
@@ -24,75 +26,111 @@ function App() {
   );
   const [alg, setAlg] = useState(new BFS());
   const [graph, setGraph] = useState(null);
+  const [editData, setEditData] = useState({
+    vertices: {},
+    edges: {},
+    directed: true,
+    selectedVertex: null,
+    selectedEdge: null,
+    selectedColor: null,
+    value: '',
+    addEdge: false,
+  });
 
   /**
    * @type {Array.<{label:string, callback:()=>{}}>}
    */
   const utilities = [
     {
+      label: 'Editor',
+      callback: () => {
+        setEdit(true);
+      },
+    },
+    {
       label: 'Randomize',
       callback: () => {
         setEdgeWeightRange([1, 1]);
+        setEdit(false);
       },
     },
     {
       label: 'Negative Randomize',
       callback: () => {
         setEdgeWeightRange([-5, 9]);
+        setEdit(false);
       },
     },
     {
       label: 'DFS',
       callback: () => {
         setAlg(new DFS());
+        setEdit(false);
+        if (edit) generateGraphInput();
       },
     },
     {
       label: 'BFS',
       callback: () => {
         setAlg(new BFS());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'Dijkstra',
       callback: () => {
         setAlg(new Dijkstra());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'Bellman-Ford',
       callback: () => {
         setAlg(new BellmanFord());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'FloydWarshall',
       callback: () => {
         setAlg(new FloydWarshall());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'Kruskal',
       callback: () => {
         setAlg(new KMST());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'Prim',
       callback: () => {
         setAlg(new PMST());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'RQ',
       callback: () => {
         setAlg(new ReachabilityQuery());
+        setEdit(false);
+        generateGraphInput();
       },
     },
     {
       label: 'Tarjan SCC',
       callback: () => {
         setAlg(new TarjanSCC());
+        setEdit(false);
+        generateGraphInput();
       },
     },
   ];
@@ -125,7 +163,33 @@ function App() {
       clearInterval(interval);
     };
   }, [tps, graph]);
-
+  const generateGraphInput = () => {
+    const n = Object.keys(editData.vertices).length;
+    const ids = {};
+    const nodePositions = Object.entries(editData.vertices).map(
+      ([id, vertex], i) => {
+        ids[id] = i;
+        return {
+          x: vertex.x,
+          y: vertex.y,
+          label: vertex.value,
+        };
+      },
+    );
+    const edges = [];
+    Object.entries(editData.edges).forEach(([from, edge]) => {
+      edge.forEach((to) => {
+        console.log(from);
+        edges.push([ids[from], to.to, to.weight || 1]);
+      });
+    });
+    setGraphInput({
+      n: n,
+      nodePositions: nodePositions,
+      edges: edges,
+      directed: editData.directed,
+    });
+  };
   return (
     <div>
       {utilities.map(({ label, callback }, index) => (
@@ -182,7 +246,11 @@ function App() {
           ))}
         </div>
       </div>
-      <RenderedGraph graph={graph} />
+      {edit ? (
+        <Editor data={editData} setData={setEditData} />
+      ) : (
+        <RenderedGraph graph={graph} />
+      )}
     </div>
   );
 }
