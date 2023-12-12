@@ -325,7 +325,7 @@ class Graph {
     /**
      * a list of table properties for initializing tables with [rows, columns, initialValue, cellstringMapping] tuples
      * @template C
-     * @type {Array.<[number, number, C, * => string]>}
+     * @type {Array.<TableConfiguration>}
      */
     this.tableInitialization = [];
 
@@ -410,27 +410,37 @@ class Graph {
   }
 
   /**
+   * @template T
+   * @typedef {Object} TableConfiguration
+   * @property {string} name
+   * @property {number} rows
+   * @property {number} columns
+   * @property {T} initialValue
+   * @property {Array.<string>} rowlabels
+   * @property {Array.<string>} collabels
+   * @property {(cell: T) => string} stringMapping
+   */
+  /**
    * (pre-finalization) creates a table (to track something in memory)
    * @template [T=number]
-   * @typedef {{name:string, rows:number, columns:number, initialValue:T, rowlabels:string[], collabels:string[], stringMapping:T=>string}} TableField<T>
-   * @param {TableField<T>} tableField
+   * @param {TableConfiguration<T>} tableField
    * @return {EventfulTable<T>}
    */
-  createTable(tablefield) {
+  createTable(tableField) {
     if (this.finalized) {
       throw new Error('cannot create a table after graph has been finalized');
     }
     // check if stringMapping was provided
-    if (!tablefield.stringMapping) {
-      tablefield.stringMapping = (x) => stringMaps[x] || x.toString();
+    if (!tableField.stringMapping) {
+      tableField.stringMapping = (x) => stringMaps[x] || x.toString();
     }
     /**
      * table ID (used to reference itself in the events list)
      */
     const id = this.tableInitialization.length;
-    this.tableInitialization.push(tablefield);
+    this.tableInitialization.push(tableField);
 
-    const table = new EventfulTable(tablefield);
+    const table = new EventfulTable(tableField);
     table.addEventListener('read', () => {
       this.events.push({
         type: 'tableRead',
