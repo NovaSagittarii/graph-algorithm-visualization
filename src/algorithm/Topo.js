@@ -13,6 +13,7 @@ class Topo extends BaseAlgorithm {
             }
             table.set(0,i, graph.getVertex(i).getAuxiliaryValue(0)); // setting in table for visuals
         }
+        
 
     }
 
