@@ -77,6 +77,11 @@ class ColoredElement extends EventTarget {
    * @return {ColoredElement<T>} itself
    */
   removeHighlight(color) {
+    if (!color) {
+      for (const color of this.highlights) {
+        this.removeHighlight(color);
+      }
+    }
     this.highlight = color;
     this.dispatchEvent(new Event('highlightRemove'));
     this.highlights.delete(color);

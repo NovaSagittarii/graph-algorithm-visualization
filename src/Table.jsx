@@ -45,14 +45,14 @@ export default function Table({ table }) {
                   data-tooltip-content={
                     (table.rowheader
                       ? table.rowheader +
-                        ' ' +
-                        (table.rowlabels ? table.rowlabels[i] ?? '' : '')
+                      ' ' +
+                      (table.rowlabels ? table.rowlabels[i] ?? '' : '')
                       : '') +
                     ', ' +
                     (table.colheader
                       ? table.colheader +
-                        ' ' +
-                        (table.collabels ? table.collabels[j] ?? '' : '')
+                      ' ' +
+                      (table.collabels ? table.collabels[j] ?? '' : '')
                       : '')
                   }
                   className={
@@ -61,10 +61,10 @@ export default function Table({ table }) {
                       ? 'border-2 border-red-500 bg-red-500 '
                       : '') +
                     (i === table.lastRow && j !== table.lastColumn
-                      ? 'bg-green-500 '
+                      ? 'bg-green-300 '
                       : '') +
                     (i !== table.lastRow && j === table.lastColumn
-                      ? 'bg-blue-100 '
+                      ? 'bg-blue-300 '
                       : '') +
                     (i !== table.lastRow && j !== table.lastColumn
                       ? 'bg-slate-300 '

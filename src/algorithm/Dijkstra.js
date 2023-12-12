@@ -56,7 +56,7 @@ class Dijkstra extends BaseAlgorithm {
       if (visited) continue;
       u.setAuxiliaryValue(0, true); // mark as visited
       u.setColor(1);
-      // u.addHighlight(parent.get(0, from));
+      u.addHighlight(2);
 
       code.setLine(12);
       let neighbors;
