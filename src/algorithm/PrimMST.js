@@ -17,6 +17,7 @@ class PrimMST extends BaseAlgorithm {
     // --- process graph
     let mstEdges = [];
     let setS = [0];
+    graph.getVertex(0).setColor(3);
     
     while (mstEdges < graphInput.n - 1) {
       for (let i = 0; i < setS.length; ++i) {
@@ -40,6 +41,8 @@ class PrimMST extends BaseAlgorithm {
             continue;
           }
 
+          graph.getEdge(from,to);
+
           if (weight < lightEdgeWeight) {
             lightEdgeWeight = weight;
             lightEdge = j;
@@ -54,7 +57,12 @@ class PrimMST extends BaseAlgorithm {
           console.log("Pushing an edge to the tree");
           mstEdges.push(lightEdge);
           setS.push(graphInput.edges[lightEdge][1]);
+          graph.getVertex(graphInput.edges[lightEdge][1]).setColor(3);
+
           console.log("Pushing to S");
+
+          const edgeTuple = graphInput.edges[lightEdge]
+          graph.getEdge(edgeTuple[0], edgeTuple[1]).setColor(3);
         }
       }
     }
